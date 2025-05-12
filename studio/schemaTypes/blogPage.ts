@@ -5,30 +5,31 @@ import { defineField, defineType } from "sanity";
 const blogPageGroups = [
 	{
 		name: "content",
-		title: "Content",
+		title: "Conteúdo",
 		icon: DocumentTextIcon,
 		default: true,
 	},
 	{
 		name: "display",
-		title: "Display Options",
+		title: "Opções de Exibição",
 		icon: ThLargeIcon,
 	},
 	{
 		name: "seo",
-		title: "SEO Settings",
+		title: "Configurações de SEO",
 		icon: EarthGlobeIcon,
 	},
-	{
-		name: "translations",
-		title: "Translations",
-		icon: DocumentTextIcon,
-	},
+];
+
+const layoutOptions = [
+	{ title: "Grade Padrão", value: "grid" },
+	{ title: "Posts em Destaque", value: "featured" },
+	{ title: "Lista Compacta", value: "compact" },
 ];
 
 export const blogPage = defineType({
 	name: "blogPage",
-	title: "Blog Page",
+	title: "Página do Blog",
 	type: "document",
 	icon: DocumentTextIcon,
 	groups: blogPageGroups,
@@ -36,54 +37,38 @@ export const blogPage = defineType({
 		defineField({
 			name: "title",
 			type: "string",
-			title: "Page Title",
-			description: "Title for the blog index page",
+			title: "Título da Página",
+			description: "Título para a página de índice do blog",
 			initialValue: "Blog",
-			validation: (rule) => rule.required(),
+			validation: (rule) =>
+				rule.required().error("O título da página do blog é obrigatório."),
 			group: "content",
-		}),
-		defineField({
-			name: "i18n_title",
-			type: "internationalizedArrayString",
-			title: "Page Title (Translated)",
-			description: "Title for the blog index page in other languages",
 		}),
 		defineField({
 			name: "description",
 			type: "text",
-			title: "Page Description",
-			description: "Subtitle or brief description for the blog page",
+			title: "Descrição da Página",
+			description: "Subtítulo ou breve descrição para a página do blog",
 			rows: 2,
-			initialValue: "Latest articles, news and insights",
+			initialValue: "Artigos, notícias e insights mais recentes",
 			group: "content",
-		}),
-		defineField({
-			name: "i18n_description",
-			type: "internationalizedArrayText",
-			title: "Page Description (Translated)",
-			description:
-				"Subtitle or brief description for the blog page in other languages",
 		}),
 		defineField({
 			name: "layout",
 			type: "string",
-			title: "Layout",
-			description: "Choose the layout for the blog listing",
+			description: "Escolha o layout para a listagem do blog",
 			group: "display",
 			options: {
-				list: [
-					{ title: "Standard Grid", value: "grid" },
-					{ title: "Featured Posts", value: "featured" },
-					{ title: "Compact List", value: "compact" },
-				],
+				list: layoutOptions,
+				layout: "radio",
 			},
 			initialValue: "grid",
 		}),
 		defineField({
 			name: "postsPerPage",
 			type: "number",
-			title: "Posts Per Page",
-			description: "Number of posts to display per page",
+			title: "Posts por Página",
+			description: "Número de posts para exibir por página",
 			initialValue: 9,
 			validation: (rule) => rule.min(1).max(24),
 			group: "display",
@@ -91,9 +76,8 @@ export const blogPage = defineType({
 		defineField({
 			name: "featuredPostsCount",
 			type: "number",
-			title: "Featured Posts Count",
 			description:
-				"Number of posts to feature prominently (only applies to Featured Posts layout)",
+				"Número de posts para destacar (aplica-se apenas ao layout de Posts em Destaque)",
 			initialValue: 3,
 			hidden: ({ parent }) => parent?.layout !== "featured",
 			validation: (rule) => rule.min(1).max(6),
@@ -101,44 +85,47 @@ export const blogPage = defineType({
 		}),
 		defineField({
 			name: "showOnlyFeaturedPosts",
-			type: "boolean",
-			title: "Show Only Posts Marked as Featured",
+			type: "string",
+			title: "Exibir Somente Posts Marcados como Destaque",
 			description:
-				"When enabled, only posts with the featured flag will be shown as featured",
-			initialValue: false,
+				"Quando habilitado, apenas posts com a marcação de destaque serão exibidos como destaque.",
+			initialValue: "false",
+			options: {
+				list: [
+					{ title: "Sim", value: "true" },
+					{ title: "Não", value: "false" },
+				],
+				layout: "radio",
+			},
 			hidden: ({ parent }) => parent?.layout !== "featured",
 			group: "display",
 		}),
 		defineField({
 			name: "seo",
-			title: "SEO Settings",
 			type: "object",
+			title: "Configurações de SEO",
+			description: "Configurações de SEO para a página do blog",
 			group: "seo",
 			fields: [
 				{
 					name: "metaTitle",
 					type: "string",
-					title: "Meta Title",
-					description: "Title used for the browser tab and search results",
-				},
-				{
-					name: "i18n_metaTitle",
-					type: "internationalizedArrayString",
-					title: "Meta Title (Translated)",
-					description:
-						"Translated title used for the browser tab and search results",
+					title: "Título Meta",
+					description: "Título usado para a aba do navegador e resultados de busca",
+					validation: (rule) =>
+						rule.warning(
+							"Títulos meta concisos são melhores para SEO (idealmente < 60 caracteres).",
+						),
 				},
 				{
 					name: "metaDescription",
 					type: "text",
-					title: "Meta Description",
-					description: "Description for search engine results",
-				},
-				{
-					name: "i18n_metaDescription",
-					type: "internationalizedArrayText",
-					title: "Meta Description (Translated)",
-					description: "Translated description for search engine results",
+					title: "Descrição Meta",
+					description: "Descrição para os resultados de motores de busca",
+					validation: (rule) =>
+						rule.warning(
+							"Descrições meta devem resumir o conteúdo da página (idealmente < 160 caracteres).",
+						),
 				},
 			],
 		}),
@@ -149,9 +136,11 @@ export const blogPage = defineType({
 			layout: "layout",
 		},
 		prepare({ title, layout }) {
+			const selectedLayout = layoutOptions.find((opt) => opt.value === layout);
+			const layoutTitle = selectedLayout ? selectedLayout.title : layout;
 			return {
-				title: title || "Blog Page",
-				subtitle: `Layout: ${layout || "standard"}`,
+				title: title || "Página do Blog",
+				subtitle: `Layout: ${layoutTitle || "padrão"}`,
 				media: DocumentTextIcon,
 			};
 		},

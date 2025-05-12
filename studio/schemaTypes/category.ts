@@ -5,20 +5,15 @@ import { defineField, defineType } from "sanity";
 const categoryGroups = [
 	{
 		name: "basic",
-		title: "Basic Information",
+		title: "Informações Básicas", 
 		icon: InfoOutlineIcon,
 		default: true,
-	},
-	{
-		name: "translations",
-		title: "Translations",
-		icon: InfoOutlineIcon,
 	},
 ];
 
 export const category = defineType({
 	name: "category",
-	title: "Category",
+	title: "Categoria", 
 	type: "document",
 	icon: TagIcon,
 	groups: categoryGroups,
@@ -26,36 +21,31 @@ export const category = defineType({
 		defineField({
 			name: "title",
 			type: "string",
-			title: "Title",
-			validation: (rule) => rule.required(),
+			title: "Título", 
+			validation: (rule) =>
+				rule.required().error("O título da categoria é obrigatório."), 
 			group: "basic",
-		}),
-		defineField({
-			name: "i18n_title",
-			type: "internationalizedArrayString",
-			title: "Title (Translated)",
 		}),
 		defineField({
 			name: "slug",
 			type: "slug",
-			title: "Slug",
 			options: {
 				source: "title",
 				maxLength: 96,
 			},
-			validation: (rule) => rule.required(),
+			validation: (rule) =>
+				rule.required().error("O slug da categoria é obrigatório."), 
 			group: "basic",
 		}),
 		defineField({
 			name: "description",
 			type: "text",
-			title: "Description",
+			title: "Descrição", 
+			validation: (rule) =>
+				rule
+					.max(200)
+					.warning("Uma descrição concisa é recomendada (idealmente < 150 caracteres)."),
 			group: "basic",
-		}),
-		defineField({
-			name: "i18n_description",
-			type: "internationalizedArrayText",
-			title: "Description (Translated)",
 		}),
 	],
 	preview: {
@@ -66,7 +56,7 @@ export const category = defineType({
 		prepare({ title, subtitle }) {
 			return {
 				title,
-				subtitle: subtitle || "No description",
+				subtitle: subtitle || "Sem descrição", 
 				media: TagIcon,
 			};
 		},

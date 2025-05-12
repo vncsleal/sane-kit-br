@@ -6,6 +6,7 @@ import { internationalizedArray } from "sanity-plugin-internationalized-array";
 import { codeInput } from "@sanity/code-input";
 import { unsplashImageAsset } from "sanity-plugin-asset-source-unsplash";
 import Logo from "./components/Logo";
+import { ptBRLocale } from "@sanity/locale-pt-br";
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || "your-project-id";
 const dataset = process.env.SANITY_STUDIO_DATASET || "production";
@@ -29,14 +30,9 @@ export default defineConfig({
 			defaultLanguages: ["en"],
 			fieldTypes: ["string", "text"],
 		}),
+		ptBRLocale(),
 	],
 	schema: {
 		types: schemaTypes,
-	},
-	beta: {
-		create: {
-			// Required for Create integration
-			fallbackStudioOrigin: "sane-demo.sanity.studio",
-		},
 	},
 });

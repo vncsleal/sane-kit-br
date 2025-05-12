@@ -5,13 +5,13 @@ import { defineField, defineType } from "sanity";
 const casesGroups = [
 	{
 		name: "content",
-		title: "Content",
+		title: "Conteúdo",
 		icon: InfoOutlineIcon,
 		default: true,
 	},
 	{
 		name: "appearance",
-		title: "Appearance",
+		title: "Aparência",
 		icon: ComponentIcon,
 	},
 	{
@@ -19,16 +19,16 @@ const casesGroups = [
 		title: "Cases",
 		icon: CaseIcon,
 	},
-	{
-		name: "translations",
-		title: "Translations",
-		icon: InfoOutlineIcon,
-	},
+];
+
+const variants = [
+	{ title: "Carrossel de Logos", value: "logoCarousel" },
+	{ title: "Slider Compacto", value: "compactSlider" },
 ];
 
 export const casesSection = defineType({
 	name: "casesSection",
-	title: "Cases Section",
+	title: "Seção de Cases",
 	type: "object",
 	icon: CaseIcon,
 	groups: casesGroups,
@@ -36,87 +36,82 @@ export const casesSection = defineType({
 		defineField({
 			name: "variant",
 			type: "string",
-			title: "Variant",
 			group: "appearance",
 			options: {
-				list: [
-					{ title: "Logo Carousel", value: "logoCarousel" },
-					{ title: "Compact Slider", value: "compactSlider" },
-				],
+				list: variants,
+				layout: "radio",
 			},
 			initialValue: "logoCarousel",
 		}),
 		defineField({
 			name: "heading",
 			type: "string",
-			title: "Heading",
-			validation: (rule) => rule.required(),
+			title: "Título",
+			validation: (rule) =>
+				rule.required().error("O título da seção de cases é obrigatório."),
 			group: "content",
-		}),
-		defineField({
-			name: "i18n_heading",
-			type: "internationalizedArrayString",
-			title: "Heading (Translated)",
 		}),
 		defineField({
 			name: "subheading",
 			type: "text",
-			title: "Subheading",
+			title: "Subtítulo",
 			rows: 2,
+			validation: (rule) =>
+				rule
+					.max(250)
+					.warning(
+						"Subtítulos concisos são mais eficazes (idealmente < 150 caracteres).",
+					),
 			group: "content",
-		}),
-		defineField({
-			name: "i18n_subheading",
-			type: "internationalizedArrayText",
-			title: "Subheading (Translated)",
 		}),
 		defineField({
 			name: "cases",
 			type: "array",
-			title: "Case Studies/Logos",
-			description: "Add logos or case studies to display in this section",
+			title: "Cases de Estudo/Logos",
+			description: "Adicione logos ou cases de estudo para exibir nesta seção",
 			group: "cases",
+			validation: (rule) =>
+				rule.min(1).error("Adicione pelo menos um case ou logo."),
 			of: [
-				{
+				defineField({
 					type: "object",
-					name: "case",
+					name: "caseItem",
+					title: "Case",
 					fields: [
-						{
+						defineField({
 							name: "name",
 							type: "string",
-							title: "Name",
-						},
-						{
-							name: "i18n_name",
-							type: "internationalizedArrayString",
-							title: "Name (Translated)",
-						},
-						{
+							title: "Nome",
+							validation: (rule) =>
+								rule.required().error("O nome do case/logo é obrigatório."),
+						}),
+						defineField({
 							name: "logo",
 							type: "image",
-							title: "Logo",
 							options: {
 								hotspot: true,
 							},
 							fields: [
-								{
+								defineField({
 									name: "alt",
 									type: "string",
-									title: "Alternative Text",
-								},
-								{
-									name: "i18n_alt",
-									type: "internationalizedArrayString",
-									title: "Alternative Text (Translated)",
-								},
+									title: "Texto Alternativo",
+									validation: (rule) =>
+										rule
+											.required()
+											.error("O texto alternativo do logo é obrigatório."),
+								}),
 							],
-						},
-						{
+							validation: (rule) => rule.required().error("O logo é obrigatório."),
+						}),
+						defineField({
 							name: "url",
 							type: "url",
-							title: "Website URL",
-							description: "Optional link to the company's website",
-						},
+							title: "URL do Site",
+							description: "Link opcional para o site da empresa",
+							validation: (rule) =>
+								rule.uri({ allowRelative: false }).error("Forneça uma URL válida."),
+						}),
 					],
 					preview: {
 						select: {
@@ -124,20 +119,22 @@ export const casesSection = defineType({
 							media: "logo",
 						},
 					},
-				},
+				}),
 			],
 		}),
 	],
 	preview: {
 		select: {
 			title: "heading",
-			subtitle: "variant",
+			variant: "variant",
 			casesCount: "cases.length",
 		},
-		prepare({ title, subtitle, casesCount = 0 }) {
+		prepare({ title, variant }) {
+			const selectedVariant = variants.find((v) => v.value === variant);
+			const variantTitle = selectedVariant ? selectedVariant.title : variant;
 			return {
-				title: title || "Cases Section",
-				subtitle: `${subtitle || "logoCarousel"} · ${casesCount} item${casesCount === 1 ? "" : "s"}`,
+				title: title || "Seção de Cases",
+				subtitle: `${variantTitle || "logoCarousel"}`,
 				media: CaseIcon,
 			};
 		},

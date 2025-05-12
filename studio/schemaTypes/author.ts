@@ -5,144 +5,81 @@ import { defineField, defineType } from "sanity";
 const authorGroups = [
 	{
 		name: "identity",
-		title: "Identity",
+		title: "Identidade", 
 		icon: InfoOutlineIcon,
 		default: true,
 	},
 	{
 		name: "biography",
-		title: "Biography",
+		title: "Biografia", 
 		icon: BookIcon,
 	},
 	{
 		name: "contact",
-		title: "Contact & Social",
+		title: "Contato e Redes Sociais", 
 		icon: LinkIcon,
-	},
-	{
-		name: "translations",
-		title: "Translations",
-		icon: InfoOutlineIcon,
 	},
 ];
 
 export const author = defineType({
 	name: "author",
-	title: "Author",
+	title: "Autor", 
 	type: "document",
-	icon: UserIcon, // Add icon to the schema type
-	groups: authorGroups, // Add defined groups
+	icon: UserIcon, 
+	groups: authorGroups, 
 	fields: [
 		defineField({
 			name: "name",
 			type: "string",
-			title: "Name",
-			validation: (rule) => rule.required(),
-			group: "identity", // Assign field to group
-		}),
-		defineField({
-			name: "i18n_name",
-			type: "internationalizedArrayString",
-			title: "Name (Translated)",
+			title: "Nome", 
+			validation: (rule) => rule.required().error("O nome do autor é obrigatório."),
+			group: "identity", 
 		}),
 		defineField({
 			name: "slug",
 			type: "slug",
-			title: "Slug",
 			options: {
 				source: "name",
 				maxLength: 96,
 			},
-			validation: (rule) => rule.required(),
-			group: "identity", // Assign field to group
+			validation: (rule) => rule.required().error("O slug do autor é obrigatório."),
+			group: "identity",
 		}),
 		defineField({
 			name: "avatar",
 			type: "image",
-			title: "Avatar",
 			options: {
 				hotspot: true,
 			},
-			group: "identity", // Assign field to group
+			group: "identity", 
 		}),
 		defineField({
 			name: "role",
 			type: "string",
-			title: "Role",
-			description: "Job title or role in the organization",
-			group: "identity", // Assign field to group
-		}),
-		defineField({
-			name: "i18n_role",
-			type: "internationalizedArrayString",
-			title: "Role (Translated)",
-			description: "Job title or role in the organization (translated)",
+			title: "Cargo", 
+			description: "Cargo ou função na organização", 
+			group: "identity", 
 		}),
 		defineField({
 			name: "bio",
 			type: "text",
-			title: "Bio",
-			description: "Short biography for previews and cards",
+			description: "Biografia curta para pré-visualizações e cartões", 
 			rows: 3,
-			group: "biography", // Assign field to group
-		}),
-		defineField({
-			name: "i18n_bio",
-			type: "internationalizedArrayText",
-			title: "Bio (Translated)",
-			description: "Short biography for previews and cards (translated)",
+			group: "biography", 
 		}),
 		defineField({
 			name: "fullBio",
 			type: "array",
-			title: "Full Bio",
-			description: "Longer biography for author page",
+			title: "Biografia Completa", 
+			description: "Biografia mais longa para a página do autor", 
 			of: [{ type: "block" }],
-			group: "biography", // Assign field to group
-		}),
-		defineField({
-			name: "i18n_fullBio",
-			title: "Full Bio (Translated)",
-			type: "array",
-
-			of: [
-				{
-					type: "object",
-					name: "localizedBio",
-					fields: [
-						{
-							name: "language",
-							type: "string",
-							title: "Language",
-							options: {
-								list: [{ title: "Brazilian Portuguese", value: "pt_BR" }],
-							},
-						},
-						{
-							name: "content",
-							title: "Content",
-							type: "array",
-							of: [{ type: "block" }],
-						},
-					],
-					preview: {
-						select: {
-							language: "language",
-						},
-						prepare({ language }) {
-							return {
-								title: `Full Bio in ${language === "pt_BR" ? "Brazilian Portuguese" : language}`,
-							};
-						},
-					},
-				},
-			],
+			group: "biography", 
 		}),
 		defineField({
 			name: "featuredImage",
 			type: "image",
-			title: "Featured Image",
-			description: "Larger image used on author page",
+			title: "Imagem de Destaque", 
+			description: "Imagem maior usada na página do autor", 
 			options: {
 				hotspot: true,
 			},
@@ -150,21 +87,16 @@ export const author = defineType({
 				{
 					name: "alt",
 					type: "string",
-					title: "Alternative Text",
-				},
-				{
-					name: "i18n_alt",
-					type: "internationalizedArrayString",
-					title: "Alternative Text (Translated)",
+					title: "Texto Alternativo", 
 				},
 			],
-			group: "biography", // Assign field to group
+			group: "biography", 
 		}),
 		defineField({
 			name: "socialLinks",
 			type: "array",
-			title: "Social Media Links",
-			group: "contact", // Assign field to group
+			title: "Links de Redes Sociais", 
+			group: "contact", 
 			of: [
 				{
 					type: "object",
@@ -173,30 +105,30 @@ export const author = defineType({
 						defineField({
 							name: "platform",
 							type: "string",
-							title: "Platform",
+							title: "Plataforma", 
 							options: {
 								list: [
 									{ title: "Twitter", value: "twitter" },
 									{ title: "LinkedIn", value: "linkedin" },
 									{ title: "GitHub", value: "github" },
 									{ title: "Instagram", value: "instagram" },
-									{ title: "Personal Website", value: "website" },
+									{ title: "Site Pessoal", value: "website" }, 
 									{ title: "YouTube", value: "youtube" },
 								],
 							},
-							validation: (rule) => rule.required(),
+							validation: (rule) => rule.required().error("A plataforma da rede social é obrigatória."),
 						}),
 						defineField({
 							name: "url",
 							type: "url",
-							title: "URL",
-							validation: (rule) => rule.required(),
+							validation: (rule) =>
+								rule.required().error("A URL da rede social é obrigatória."),
 						}),
 						defineField({
 							name: "username",
 							type: "string",
-							title: "Username",
-							description: "Display name or username (without '@')",
+							title: "Nome de Usuário", 
+							description: "Nome de exibição ou nome de usuário (sem '@')", 
 						}),
 					],
 				},
@@ -205,9 +137,8 @@ export const author = defineType({
 		defineField({
 			name: "email",
 			type: "string",
-			title: "Email",
-			validation: (rule) => rule.email(),
-			group: "contact", // Assign field to group
+			validation: (rule) => rule.email().error("Forneça um endereço de e-mail válido."),
+			group: "contact", 
 		}),
 	],
 	preview: {

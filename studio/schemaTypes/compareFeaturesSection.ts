@@ -1,464 +1,413 @@
 import {
-	CheckmarkCircleIcon,
-	CloseCircleIcon, // Import CloseCircleIcon
-	InfoOutlineIcon,
-	TagIcon,
-	TranslateIcon,
-	ComposeIcon,
+  CheckmarkCircleIcon,
+  CloseCircleIcon,
+  InfoOutlineIcon,
+  TagIcon,
+  ComposeIcon,
 } from "@sanity/icons";
 import {
-	defineField,
-	defineType,
-	type ValidationContext,
-	type PathSegment,
-} from "sanity"; // Import PathSegment
+  defineField,
+  defineType,
+  type ValidationContext,
+} from "sanity";
 
-// Define field groups
-const compareFeaturesGroups = [
-	{
-		name: "content",
-		title: "Content",
-		icon: InfoOutlineIcon,
-		default: true,
-	},
-	{
-		name: "features",
-		title: "Features",
-		icon: CheckmarkCircleIcon,
-	},
-	{
-		name: "plans",
-		title: "Plans",
-		icon: TagIcon,
-	},
-	{
-		name: "translations",
-		title: "Translations",
-		icon: TranslateIcon,
-	},
+const highlightedOptions = [
+  { title: "Sim", value: "true" },
+  { title: "Não", value: "false" },
+];
+
+const featureValueOptions = [
+  { title: "✓ Incluído", value: "true" },
+  { title: "✗ Não incluído", value: "false" },
+  { title: "Texto Personalizado", value: "custom" },
+];
+
+const buttonIconOptions = [
+  { title: "Seta para Direita", value: "arrowRight" },
+  { title: "Telefone", value: "phone" },
+  { title: "Mais", value: "plus" },
+];
+
+const buttonVariantOptions = [
+  { title: "Padrão", value: "default" },
+  { title: "Secundário", value: "secondary" },
+  { title: "Contorno", value: "outline" },
+  { title: "Fantasma", value: "ghost" },
+  { title: "Link", value: "link" },
 ];
 
 export const compareFeaturesSection = defineType({
-	name: "compareFeaturesSection",
-	title: "Compare Features Section",
-	type: "object",
-	icon: ComposeIcon,
-	groups: compareFeaturesGroups,
-	fields: [
-		defineField({
-			name: "badgeText",
-			type: "string",
-			title: "Badge Text",
-			initialValue: "Pricing",
-			group: "content",
-		}),
-		defineField({
-			name: "heading",
-			type: "string",
-			title: "Heading",
-			validation: (rule) => rule.required(),
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_heading",
-			title: "Heading (Translated)",
-			type: "internationalizedArrayString",
-		}),
-		defineField({
-			name: "subheading",
-			type: "text",
-			title: "Subheading",
-			rows: 2,
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_subheading",
-			title: "Subheading (Translated)",
-			type: "internationalizedArrayText",
-		}),
-		defineField({
-			name: "features",
-			type: "array",
-			title: "Features to Compare",
-			description: "Select features that will be compared across plans",
-			group: "features",
-			of: [
-				{
-					type: "reference",
-					to: [{ type: "compareFeature" }],
-				},
-			],
-			validation: (rule) => rule.min(1).error("Select at least one feature"),
-		}),
-		defineField({
-			name: "plans",
-			type: "array",
-			title: "Plans to Compare",
-			group: "plans",
-			of: [
-				{
-					type: "object",
-					name: "plan",
-					groups: [
-						{ name: "content", title: "Content", default: true },
-						{
-							name: "translations",
-							title: "Translations",
-							icon: TranslateIcon,
-						},
-					],
-					fields: [
-						defineField({
-							name: "title",
-							type: "string",
-							title: "Plan Title",
-							validation: (rule) => rule.required(),
-							group: "content",
-						}),
-						defineField({
-							name: "i18n_title",
-							title: "Plan Title (Translated)",
-							type: "internationalizedArrayString",
-						}),
-						defineField({
-							name: "description",
-							type: "text",
-							title: "Plan Description",
-							rows: 3,
-							group: "content",
-						}),
-						defineField({
-							name: "i18n_description",
-							title: "Plan Description (Translated)",
-							type: "internationalizedArrayText",
-						}),
-						defineField({
-							name: "price",
-							type: "string",
-							title: "Price",
-							description: "e.g. $40, Free, Contact Us",
-							validation: (rule) => rule.required(),
-							group: "content",
-						}),
-						defineField({
-							name: "i18n_price",
-							title: "Price (Translated)",
-							type: "internationalizedArrayString",
-							description: "Translated price text (e.g. R$99/mês)",
-						}),
-						defineField({
-							name: "billingPeriod",
-							type: "string",
-							title: "Billing Period",
-							description: "e.g. / month, / year, / user",
-							group: "content",
-						}),
-						defineField({
-							name: "i18n_billingPeriod",
-							title: "Billing Period (Translated)",
-							type: "internationalizedArrayString",
-							description: "Translated billing period text (e.g. /mês)",
-							group: "translations",
-						}),
-						defineField({
-							name: "highlighted",
-							type: "boolean",
-							title: "Highlight This Plan",
-							description: "Add extra styling to make this plan stand out",
-							initialValue: false,
-							group: "content",
-						}),
-						defineField({
-							name: "featureValues",
-							type: "array",
-							title: "Feature Values",
-							description:
-								"Define the status or value of each feature for this plan.",
-							group: "content",
-							of: [
-								{
-									type: "object",
-									name: "featureValue",
-									groups: [
-										{ name: "content", title: "Content", default: true },
-										{
-											name: "translations",
-											title: "Translations",
-											icon: TranslateIcon,
-										},
-									],
-									fields: [
-										defineField({
-											name: "featureRef",
-											type: "reference",
-											title: "Feature",
-											to: [{ type: "compareFeature" }],
-											validation: (rule) => rule.required(),
-											group: "content",
-											options: {
-												filter: ({ parent }) => {
-													const existingRefs = (
-														parent as {
-															_key: string;
-															featureRef?: { _ref: string };
-														}[]
-													)
-														.filter((item) => item.featureRef?._ref)
-														.map((item) => item.featureRef?._ref);
-													return {
-														filter: "!(_id in $existingRefs)",
-														params: { existingRefs },
-													};
-												},
-											},
-										}),
-										defineField({
-											name: "value",
-											type: "string",
-											title: "Status / Value",
-											description:
-												"Select status or provide a custom value for this feature.",
-											options: {
-												list: [
-													{ title: "✓ Included", value: "true" },
-													{ title: "✗ Not included", value: "false" },
-													{ title: "Custom Text", value: "custom" },
-												],
-												layout: "radio",
-											},
-											initialValue: "true",
-											validation: (rule) => rule.required(),
-											group: "content",
-										}),
-										defineField({
-											name: "customText",
-											type: "string",
-											title: "Custom Text",
-											description:
-												"Enter custom text (e.g. '5 users', 'Basic support') if using 'Custom Text' status.",
-											hidden: ({ parent }) => parent?.value !== "custom",
-											group: "content",
-										}),
-										defineField({
-											name: "i18n_customText",
-											title: "Custom Text (Translated)",
-											type: "internationalizedArrayString",
-											description: "Translated custom text.",
-											hidden: ({ parent }) => parent?.value !== "custom",
-											group: "translations",
-										}),
-									],
-									preview: {
-										select: {
-											featureTitle: "featureRef.title",
-											value: "value",
-											customText: "customText",
-										},
-										prepare({ featureTitle, value, customText }) {
-											let subtitle = "";
-											let media = InfoOutlineIcon;
+  name: "compareFeaturesSection",
+  title: "Seção de Comparação de Características",
+  type: "object",
+  icon: ComposeIcon,
+  groups: [
+    {
+      name: "content",
+      title: "Conteúdo",
+      icon: InfoOutlineIcon,
+      default: true,
+    },
+    {
+      name: "features",
+      title: "Características",
+      icon: CheckmarkCircleIcon,
+    },
+    {
+      name: "plans",
+      title: "Planos",
+      icon: TagIcon,
+    },
+  ],
+  fields: [
+    defineField({
+      name: "badgeText",
+      title: "Texto do Emblema",
+      type: "string",
+      initialValue: "Preços",
+      group: "content",
+      validation: (rule) =>
+        rule
+          .max(30)
+          .warning("Textos de emblema concisos são mais eficazes (idealmente < 20 caracteres)."),
+    }),
+    defineField({
+      name: "heading",
+      title: "Título",
+      type: "string",
+      validation: (rule) =>
+        rule.required().error("O título da seção de comparação é obrigatório."),
+      group: "content",
+    }),
+    defineField({
+      name: "subheading",
+      title: "Subtítulo",
+      type: "text",
+      rows: 2,
+      group: "content",
+      validation: (rule) =>
+        rule
+          .max(200)
+          .warning("Subtítulos concisos são mais eficazes (idealmente < 150 caracteres)."),
+    }),
+    defineField({
+      name: "features",
+      title: "Características para Comparar",
+      type: "array",
+      description: "Selecione características que serão comparadas entre os planos",
+      group: "features",
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "compareFeature" }],
+        },
+      ],
+      validation: (rule) =>
+        rule.min(1).error("Selecione pelo menos uma característica para comparar."),
+    }),
+    defineField({
+      name: "plans",
+      title: "Planos para Comparar",
+      type: "array",
+      group: "plans",
+      of: [
+        {
+          type: "object",
+          name: "plan",
+          title: "Plano",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Título do Plano",
+              type: "string",
+              validation: (rule) =>
+                rule.required().error("O título do plano é obrigatório."),
+            }),
+            defineField({
+              name: "description",
+              title: "Descrição do Plano",
+              type: "text",
+              rows: 3,
+              validation: (rule) =>
+                rule
+                  .max(250)
+                  .warning("Descrições de plano concisas são recomendadas (idealmente < 200 caracteres)."),
+            }),
+            defineField({
+              name: "price",
+              title: "Preço",
+              type: "string",
+              description: "ex: R$40, Grátis, Entre em Contato",
+              validation: (rule) =>
+                rule.required().error("O preço do plano é obrigatório."),
+            }),
+            defineField({
+              name: "billingPeriod",
+              title: "Período de Cobrança",
+              type: "string",
+              description: "ex: /mês, /ano, /usuário",
+              validation: (rule) =>
+                rule
+                  .max(20)
+                  .warning("Períodos de cobrança devem ser curtos (ex: '/mês')."),
+            }),
+            defineField({
+              name: "highlighted",
+              title: "Destacar Este Plano",
+              type: "string",
+              description: "Adicionar estilo extra para destacar este plano",
+              options: {
+                list: highlightedOptions,
+                layout: "radio",
+              },
+              initialValue: "false",
+            }),
+            defineField({
+              name: "featureValues",
+              title: "Valores das Características",
+              type: "array",
+              description:
+                "Defina o status ou valor de cada característica para este plano.",
+              of: [
+                {
+                  type: "object",
+                  name: "featureValue",
+                  title: "Valor da Característica",
+                  fields: [
+                    defineField({
+                      name: "featureRef",
+                      title: "Característica",
+                      type: "reference",
+                      to: [{ type: "compareFeature" }],
+                      validation: (rule) =>
+                        rule.required().error("A referência à característica é obrigatória."),
+                      options: {
+                        filter: ({ parent }) => {
+                          const existingRefs = (
+                            parent as {
+                              _key: string;
+                              featureRef?: { _ref: string };
+                            }[]
+                          )
+                            .filter((item) => item.featureRef?._ref)
+                            .map((item) => item.featureRef?._ref);
+                          return {
+                            filter: "!(_id in $existingRefs)",
+                            params: { existingRefs },
+                          };
+                        },
+                      },
+                    }),
+                    defineField({
+                      name: "value",
+                      title: "Status / Valor",
+                      type: "string",
+                      description:
+                        "Selecione o status ou forneça um valor personalizado para esta característica.",
+                      options: {
+                        list: featureValueOptions,
+                        layout: "radio",
+                      },
+                      initialValue: "true",
+                      validation: (rule) =>
+                        rule.required().error("O valor/status da característica é obrigatório."),
+                    }),
+                    defineField({
+                      name: "customText",
+                      title: "Texto Personalizado",
+                      type: "string",
+                      description:
+                        "Insira o texto personalizado (ex: '5 usuários', 'Suporte básico') se estiver usando o status 'Texto Personalizado'.",
+                      hidden: ({ parent }) => parent?.value !== "custom",
+                      validation: (rule) =>
+                        rule
+                          .max(100)
+                          .warning("Textos personalizados concisos são mais eficazes (idealmente < 70 caracteres)."),
+                    }),
+                  ],
+                  preview: {
+                    select: {
+                      featureTitle: "featureRef.title",
+                      value: "value",
+                      customText: "customText",
+                    },
+                    prepare({ featureTitle, value, customText }) {
+                      let subtitle = "";
+                      let media = InfoOutlineIcon;
 
-											if (value === "true") {
-												subtitle = "✓ Included";
-												media = CheckmarkCircleIcon;
-											} else if (value === "false") {
-												subtitle = "✗ Not included";
-												media = CloseCircleIcon;
-											} else if (value === "custom") {
-												subtitle = customText || "Custom Text";
-											}
+                      const selectedOption = featureValueOptions.find(opt => opt.value === value);
 
-											return {
-												title: featureTitle || "Feature",
-												subtitle: subtitle,
-												media: media,
-											};
-										},
-									},
-								},
-							],
-							validation: (rule) =>
-								rule
-									.required()
-									.min(1)
-									.unique() // Ensures unique featureRef._ref per plan
-									.custom((featureValues, context: ValidationContext) => {
-										// Safely access document and pageBuilder
-										const pageBuilder = context.document
-											?.pageBuilder as unknown; // Cast to unknown first for safety
-										const currentPath = context.path;
+                      if (selectedOption) {
+                        subtitle = selectedOption.title;
+                        if (value === "true") media = CheckmarkCircleIcon;
+                        else if (value === "false") media = CloseCircleIcon;
+                        else if (value === "custom") subtitle = customText || selectedOption.title;
+                      } else {
+                        subtitle = customText || "Valor não especificado";
+                      }
 
-										// Ensure pageBuilder is an array and path exists and has enough segments
-										if (
-											!Array.isArray(pageBuilder) ||
-											!currentPath ||
-											currentPath.length < 2
-										) {
-											// Cannot determine parent section, skip validation or return an error
-											// console.warn("Could not determine parent section for validation.");
-											return true; // Or return specific error message if needed
-										}
+                      return {
+                        title: featureTitle || "Característica",
+                        subtitle: subtitle,
+                        media: media,
+                      };
+                    },
+                  },
+                },
+              ],
+              validation: (rule) =>
+                rule
+                  .required()
+                  .min(1)
+                  .error("Defina o valor para pelo menos uma característica.")
+                  .unique()
+                  .custom((featureValues, context: ValidationContext) => {
+                    const pageBuilder = context.document
+                      ?.pageBuilder as unknown;
+                    const currentPath = context.path;
 
-										// Safely access the key of the parent section in the path
-										const parentPathSegment = currentPath[1];
-										const parentSectionKey =
-											typeof parentPathSegment === "object" &&
-											parentPathSegment !== null &&
-											"_key" in parentPathSegment
-												? parentPathSegment._key
-												: undefined;
+                    if (
+                      !Array.isArray(pageBuilder) ||
+                      !currentPath ||
+                      currentPath.length < 2
+                    ) {
+                      return true;
+                    }
 
-										if (!parentSectionKey) {
-											// console.warn("Could not determine parent section key.");
-											return true; // Or return specific error message
-										}
+                    const parentPathSegment = currentPath[1];
+                    const parentSectionKey =
+                      typeof parentPathSegment === "object" &&
+                      parentPathSegment !== null &&
+                      "_key" in parentPathSegment
+                        ? parentPathSegment._key
+                        : undefined;
 
-										// Find the parent section using the key
-										const parentSection = pageBuilder.find(
-											(
-												section: unknown,
-											): section is {
-												_key?: string;
-												_type?: string;
-												features?: { _ref: string }[];
-											} =>
-												typeof section === "object" &&
-												section !== null &&
-												"_key" in section &&
-												section._key === parentSectionKey,
-										);
+                    if (!parentSectionKey) {
+                      return true;
+                    }
 
-										const allFeaturesRefs =
-											parentSection?.features?.map((f) => f._ref) || [];
+                    const parentSection = pageBuilder.find(
+                      (
+                        section: unknown,
+                      ): section is {
+                        _key?: string;
+                        _type?: string;
+                        features?: { _ref: string }[];
+                      } =>
+                        typeof section === "object" &&
+                        section !== null &&
+                        "_key" in section &&
+                        section._key === parentSectionKey,
+                    );
 
-										// If no features are defined in the section yet, validation passes
-										if (allFeaturesRefs.length === 0) return true;
+                    const allFeaturesRefs =
+                      parentSection?.features?.map((f) => f._ref) || [];
 
-										// Get the _ref of features defined within this plan's featureValues
-										const definedFeatureRefs = (
-											featureValues as
-												| { featureRef?: { _ref: string } }[]
-												| undefined // Allow undefined
-										)?.map((fv) => fv.featureRef?._ref);
+                    if (allFeaturesRefs.length === 0) return true;
 
-										// Check if any features defined in the section are missing from the plan
-										const missingRefs = allFeaturesRefs.filter(
-											(ref) => !definedFeatureRefs?.includes(ref),
-										);
+                    const definedFeatureRefs = (
+                      featureValues as
+                        | { featureRef?: { _ref: string } }[]
+                        | undefined
+                    )?.map((fv) => fv.featureRef?._ref);
 
-										if (missingRefs.length > 0) {
-											// Provide a more informative error message if possible
-											// (Getting feature titles here is complex, so using refs)
-											return `Missing values for some features. Please define a status/value for all features listed in the 'Features to Compare' tab. Missing feature refs: ${missingRefs.join(", ")}`;
-										}
+                    const missingRefs = allFeaturesRefs.filter(
+                      (ref) => !definedFeatureRefs?.includes(ref),
+                    );
 
-										// Check for duplicate featureRefs within the same plan (unique() rule handles this, but double-check)
-										const refs = definedFeatureRefs?.filter(
-											Boolean,
-										) as string[];
-										if (new Set(refs).size !== refs.length) {
-											return "Each feature can only be listed once per plan.";
-										}
+                    if (missingRefs.length > 0) {
+                      return `Valores ausentes para algumas características. Por favor, defina um status/valor para todas as características listadas na aba 'Características para Comparar'. Refs de características ausentes: ${missingRefs.join(", ")}`;
+                    }
 
-										return true;
-									}),
-						}),
-						defineField({
-							name: "buttonText",
-							type: "string",
-							title: "Button Text",
-							validation: (rule) => rule.required(),
-							group: "content",
-						}),
-						defineField({
-							name: "i18n_buttonText",
-							title: "Button Text (Translated)",
-							type: "internationalizedArrayString",
-						}),
-						defineField({
-							name: "buttonUrl",
-							type: "string",
-							title: "Button URL",
-							validation: (rule) => rule.required(),
-							group: "content",
-						}),
-						defineField({
-							name: "buttonIcon",
-							type: "string",
-							title: "Button Icon",
-							options: {
-								list: [
-									{ title: "Arrow Right", value: "arrowRight" },
-									{ title: "Phone", value: "phone" },
-									{ title: "Plus", value: "plus" },
-								],
-							},
-							initialValue: "arrowRight",
-							group: "content",
-						}),
-						defineField({
-							name: "buttonVariant",
-							type: "string",
-							title: "Button Variant",
-							options: {
-								list: [
-									{ title: "Default", value: "default" },
-									{ title: "Secondary", value: "secondary" },
-									{ title: "Outline", value: "outline" },
-									{ title: "Ghost", value: "ghost" },
-									{ title: "Link", value: "link" },
-								],
-							},
-							initialValue: "default",
-							group: "content",
-						}),
-					],
-					preview: {
-						select: {
-							title: "title",
-							price: "price",
-							highlighted: "highlighted",
-						},
-						prepare({ title, price, highlighted }) {
-							return {
-								title: `${highlighted ? "🌟 " : ""}${title || "Plan"}`,
-								subtitle: price ? `${price}` : "No price",
-							};
-						},
-					},
-				},
-			],
-			validation: (rule) => rule.min(1).error("Add at least one plan"),
-		}),
-		defineField({
-			name: "footnote",
-			title: "Footnote",
-			type: "text",
-			rows: 2,
-			description:
-				"Optional footnote text at the bottom of the comparison table",
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_footnote",
-			title: "Footnote (Translated)",
-			type: "internationalizedArrayText",
-			description:
-				"Translated footnote text at the bottom of the comparison table",
-		}),
-	],
-	preview: {
-		select: {
-			title: "heading",
-			plansCount: "plans.length",
-			featuresCount: "features.length",
-		},
-		prepare({ title, plansCount = 0, featuresCount = 0 }) {
-			return {
-				title: title || "Compare Features Section",
-				subtitle: `${plansCount} plan${plansCount === 1 ? "" : "s"} · ${featuresCount} feature${featuresCount === 1 ? "" : "s"}`,
-				media: ComposeIcon,
-			};
-		},
-	},
+                    const refs = definedFeatureRefs?.filter(
+                      Boolean,
+                    ) as string[];
+                    if (new Set(refs).size !== refs.length) {
+                      return "Cada característica só pode ser listada uma vez por plano.";
+                    }
+
+                    return true;
+                  }),
+            }),
+            defineField({
+              name: "buttonText",
+              title: "Texto do Botão",
+              type: "string",
+              validation: (rule) =>
+                rule.required().error("O texto do botão é obrigatório.")
+                .max(40).warning("Textos de botão devem ser curtos e diretos (idealmente < 30 caracteres)."),
+            }),
+            defineField({
+              name: "buttonUrl",
+              title: "URL do Botão",
+              type: "url",
+              validation: (rule) =>
+                rule.required().error("A URL do botão é obrigatória.")
+                .uri({ allowRelative: false, scheme: ['http', 'https'] }).error("Forneça uma URL válida (http ou https)."),
+            }),
+            defineField({
+              name: "buttonIcon",
+              title: "Ícone do Botão",
+              type: "string",
+              options: {
+                list: buttonIconOptions,
+                layout: "radio",
+              },
+              initialValue: "arrowRight",
+            }),
+            defineField({
+              name: "buttonVariant",
+              title: "Variante do Botão",
+              type: "string",
+              options: {
+                list: buttonVariantOptions,
+              },
+              initialValue: "default",
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              price: "price",
+              highlighted: "highlighted",
+            },
+            prepare({ title, price, highlighted }) {
+              return {
+                title: `${highlighted === "true" ? "🌟 " : ""}${title || "Plano"}`,
+                subtitle: price ? `${price}` : "Sem preço",
+              };
+            },
+          },
+        },
+      ],
+      validation: (rule) =>
+        rule.min(1).error("Adicione pelo menos um plano para comparação."),
+    }),
+    defineField({
+      name: "footnote",
+      title: "Nota de Rodapé",
+      type: "text",
+      rows: 2,
+      description:
+        "Texto opcional de nota de rodapé na parte inferior da tabela de comparação",
+      group: "content",
+      validation: (rule) =>
+        rule
+          .max(300)
+          .warning("Notas de rodapé concisas são preferíveis (idealmente < 200 caracteres)."),
+    }),
+  ],
+  preview: {
+    select: {
+      title: "heading",
+      plansCount: "plans.length",
+      featuresCount: "features.length",
+    },
+    prepare({ title }) {
+      return {
+        title: title || "Seção de Comparação de Características",
+        media: ComposeIcon,
+      };
+    },
+  },
 });

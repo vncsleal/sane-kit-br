@@ -1,238 +1,298 @@
 import {
-	MenuIcon,
-	InfoOutlineIcon,
-	ComponentIcon,
-	LinkIcon,
+  MenuIcon,
+  InfoOutlineIcon,
+  ComponentIcon,
+  LinkIcon,
 } from "@sanity/icons";
-import { defineField, defineType } from "sanity";
+import { defineField, defineType, type Reference, type ValidationContext } from "sanity";
 
-// Define field groups
-const footerGroups = [
-	{
-		name: "basic",
-		title: "Basic Information",
-		icon: InfoOutlineIcon,
-		default: true,
-	},
-	{
-		name: "appearance",
-		title: "Appearance",
-		icon: ComponentIcon,
-	},
-	{
-		name: "content",
-		title: "Content",
-		icon: MenuIcon,
-	},
-	{
-		name: "navigation",
-		title: "Navigation",
-		icon: LinkIcon,
-	},
-	{
-		name: "translations",
-		title: "Translations",
-		icon: InfoOutlineIcon,
-	},
+const footerVariants = [
+  { title: "Simples", value: "simple" },
+  { title: "Mínimo", value: "minimal" },
+  { title: "Minúsculo", value: "tiny" },
 ];
 
 export const footer = defineType({
-	name: "footer",
-	title: "Footer",
-	type: "document",
-	icon: MenuIcon,
-	groups: footerGroups,
-	fields: [
-		defineField({
-			name: "title",
-			type: "string",
-			title: "Site Name",
-			description: "The name displayed in the footer",
-			validation: (rule) => rule.required(),
-			group: "basic",
-		}),
-		defineField({
-			name: "i18n_title",
-			title: "Site Name (Translated)",
-			type: "internationalizedArrayString",
-			group: "basic",
-		}),
-		defineField({
-			name: "logo",
-			type: "image",
-			title: "Logo",
-			description:
-				"Upload a logo to display instead of the site name. If no logo is provided, site name text will be used.",
-			options: {
-				hotspot: true,
-			},
-			fields: [
-				{
-					name: "alt",
-					type: "string",
-					title: "Alternative Text",
-					description: "Important for SEO and accessibility",
-				},
-				{
-					name: "i18n_alt",
-					title: "Alternative Text (Translated)",
-					type: "internationalizedArrayString",
-				},
-			],
-			group: "basic",
-		}),
-		defineField({
-			name: "variant",
-			type: "string",
-			title: "Layout Variant",
-			options: {
-				list: [
-					{ title: "Simple", value: "simple" },
-					{ title: "Minimal", value: "minimal" },
-					{ title: "Tiny", value: "tiny" },
-				],
-			},
-			initialValue: "simple",
-			group: "appearance",
-		}),
-		defineField({
-			name: "description",
-			type: "text",
-			title: "Footer Description",
-			description: "A short description or tagline for the footer",
-			rows: 2,
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_description",
-			title: "Footer Description (Translated)",
-			type: "internationalizedArrayText",
-			group: "content",
-		}),
-		defineField({
-			name: "address",
-			type: "array",
-			title: "Address Lines",
-			of: [{ type: "string" }],
-			description: "Enter the address line by line",
-			group: "content",
-		}),
-		defineField({
-			name: "legalLinks",
-			type: "array",
-			title: "Legal Links",
-			group: "navigation",
-			of: [
-				{
-					type: "object",
-					name: "link",
-					fields: [
-						defineField({
-							name: "title",
-							type: "string",
-							title: "Title",
-							validation: (rule) => rule.required(),
-						}),
-						defineField({
-							name: "i18n_title",
-							title: "Title (Translated)",
-							type: "internationalizedArrayString",
-						}),
-						defineField({
-							name: "url",
-							type: "string",
-							title: "URL",
-							validation: (rule) => rule.required(),
-						}),
-					],
-				},
-			],
-		}),
-		defineField({
-			name: "navigationItems",
-			type: "array",
-			title: "Navigation Items",
-			group: "navigation",
-			of: [
-				{
-					type: "object",
-					name: "navigationItem",
-					fields: [
-						defineField({
-							name: "title",
-							type: "string",
-							title: "Title",
-							validation: (rule) => rule.required(),
-						}),
-						defineField({
-							name: "i18n_title",
-							title: "Title (Translated)",
-							type: "internationalizedArrayString",
-						}),
-						defineField({
-							name: "href",
-							type: "string",
-							title: "Link",
-							description: "Leave blank for categories without direct links",
-						}),
-						defineField({
-							name: "description",
-							type: "text",
-							title: "Description",
-							description: "Optional description for this category",
-						}),
-						defineField({
-							name: "i18n_description",
-							title: "Description (Translated)",
-							type: "internationalizedArrayText",
-						}),
-						defineField({
-							name: "items",
-							type: "array",
-							title: "Sub Links",
-							description: "Add links under this category",
-							of: [
-								{
-									type: "object",
-									name: "subItem",
-									fields: [
-										defineField({
-											name: "title",
-											type: "string",
-											title: "Title",
-											validation: (rule) => rule.required(),
-										}),
-										defineField({
-											name: "i18n_title",
-											title: "Title (Translated)",
-											type: "internationalizedArrayString",
-										}),
-										defineField({
-											name: "href",
-											type: "string",
-											title: "Link",
-											validation: (rule) => rule.required(),
-										}),
-									],
-								},
-							],
-						}),
-					],
-				},
-			],
-		}),
-	],
-	preview: {
-		select: {
-			title: "title",
-			variant: "variant",
-		},
-		prepare({ title, variant }) {
-			return {
-				title: title || "Website Footer",
-				subtitle: `Variant: ${variant || "default"}`,
-				media: MenuIcon,
-			};
-		},
-	},
+  name: "footer",
+  title: "Rodapé",
+  type: "document",
+  icon: MenuIcon,
+  groups: [
+    {
+      name: "basic",
+      title: "Informações Básicas",
+      icon: InfoOutlineIcon,
+      default: true,
+    },
+    {
+      name: "appearance",
+      title: "Aparência",
+      icon: ComponentIcon,
+    },
+    {
+      name: "content",
+      title: "Conteúdo",
+      icon: MenuIcon,
+    },
+    {
+      name: "navigation",
+      title: "Navegação",
+      icon: LinkIcon,
+    },
+  ],
+  fields: [
+    defineField({
+      name: "title",
+      title: "Nome do Site",
+      type: "string",
+      description: "O nome exibido no rodapé",
+      validation: (rule) =>
+        rule.required().error("O nome do site no rodapé é obrigatório."),
+      group: "basic",
+    }),
+    defineField({
+      name: "logo",
+      title: "Logo",
+      type: "image",
+      description:
+        "Faça upload de um logo para exibir em vez do nome do site. Se nenhum logo for fornecido, o texto do nome do site será usado.",
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Texto Alternativo",
+          type: "string",
+          description: "Importante para SEO e acessibilidade",
+          validation: (rule) =>
+            rule.custom((value, context: ValidationContext) => {
+              const parent = context.parent as { asset?: Reference };
+              if (parent?.asset && !value) {
+                return "O texto alternativo é obrigatório se uma imagem de logo for fornecida.";
+              }
+              return true;
+            }),
+        }),
+      ],
+      group: "basic",
+    }),
+    defineField({
+      name: "variant",
+      title: "Variante de Layout",
+      type: "string",
+      options: {
+        list: footerVariants,
+        layout: "radio", 
+      },
+      initialValue: "simple",
+      group: "appearance",
+    }),
+    defineField({
+      name: "description",
+      title: "Descrição do Rodapé",
+      type: "text",
+      description: "Uma breve descrição ou tagline para o rodapé",
+      rows: 2,
+      group: "content",
+      validation: (rule) =>
+        rule
+          .max(200)
+          .warning(
+            "Descrições de rodapé concisas são mais eficazes (idealmente < 150 caracteres).",
+          ),
+    }),
+    defineField({
+      name: "address",
+      title: "Linhas de Endereço",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Insira o endereço linha por linha",
+      group: "content",
+    }),
+    defineField({
+      name: "legalLinks",
+      title: "Links Legais",
+      type: "array",
+      group: "navigation",
+      of: [
+        defineField({
+          type: "object",
+          name: "link",
+          title: "Link",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Título",
+              type: "string",
+              validation: (rule) =>
+                rule.required().error("O título do link legal é obrigatório."),
+            }),
+            defineField({
+              name: "url",
+              title: "URL",
+              type: "url", 
+              validation: (rule) =>
+                rule
+                  .required()
+                  .error("A URL do link legal é obrigatória.")
+                  .uri({
+                    allowRelative: true,
+                    scheme: ["http", "https", "mailto", "tel"],
+                  })
+                  .error(
+                    "Forneça uma URL válida ou um link relativo (ex: /privacidade).",
+                  ),
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              subtitle: "url",
+            },
+            prepare({ title, subtitle }) {
+              return {
+                title: title || "Link Legal",
+                subtitle: subtitle || "URL não definida",
+                media: LinkIcon,
+              };
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: "navigationItems",
+      title: "Itens de Navegação",
+      type: "array",
+      group: "navigation",
+      of: [
+        defineField({
+          type: "object",
+          name: "navigationItem",
+          title: "Item de Navegação",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Título",
+              type: "string",
+              validation: (rule) =>
+                rule
+                  .required()
+                  .error("O título do item de navegação é obrigatório."),
+            }),
+            defineField({
+              name: "href",
+              title: "Link",
+              type: "url", 
+              description: "Deixe em branco para categorias sem links diretos",
+              validation: (rule) =>
+                rule
+                  .uri({
+                    allowRelative: true,
+                    scheme: ["http", "https", "mailto", "tel"],
+                  })
+                  .error(
+                    "Forneça uma URL válida ou um link relativo (ex: /produtos).",
+                  ),
+            }),
+            defineField({
+              name: "description",
+              title: "Descrição",
+              type: "text",
+              description: "Descrição opcional para esta categoria",
+              validation: (rule) =>
+                rule
+                  .max(150)
+                  .warning(
+                    "Descrições de categoria concisas são melhores (idealmente < 100 caracteres).",
+                  ),
+            }),
+            defineField({
+              name: "items",
+              title: "Sub Links",
+              type: "array",
+              description: "Adicione links sob esta categoria",
+              of: [
+                defineField({
+                  type: "object",
+                  name: "subItem",
+                  title: "Sub Item",
+                  fields: [
+                    defineField({
+                      name: "title",
+                      title: "Título",
+                      type: "string",
+                      validation: (rule) =>
+                        rule
+                          .required()
+                          .error("O título do sub-link é obrigatório."),
+                    }),
+                    defineField({
+                      name: "href",
+                      title: "Link",
+                      type: "url", 
+                      validation: (rule) =>
+                        rule
+                          .required()
+                          .error("O link do sub-item é obrigatório.")
+                          .uri({
+                            allowRelative: true,
+                            scheme: ["http", "https", "mailto", "tel"],
+                          })
+                          .error(
+                            "Forneça uma URL válida ou um link relativo.",
+                          ),
+                    }),
+                  ],
+                  preview: {
+                    select: {
+                      title: "title",
+                      subtitle: "href",
+                    },
+                    prepare({ title, subtitle }) {
+                      return {
+                        title: title || "Sub Link",
+                        subtitle: subtitle || "Link não definido",
+                        media: LinkIcon,
+                      };
+                    },
+                  },
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              subtitle: "href",
+              itemCount: "items.length",
+            },
+            prepare({ title, subtitle}) {
+              return {
+                title: title || "Item de Navegação",
+                subtitle: `${subtitle || "Sem link direto"}`,
+                media: MenuIcon,
+              };
+            },
+          },
+        }),
+      ],
+    }),
+  ],
+  preview: {
+    select: {
+      title: "title",
+      variant: "variant",
+    },
+    prepare({ title, variant }) {
+      const selectedVariant = footerVariants.find((v) => v.value === variant);
+      const variantTitle = selectedVariant ? selectedVariant.title : variant;
+      return {
+        title: title || "Rodapé do Site",
+        subtitle: `Variante: ${variantTitle || "padrão"}`,
+        media: MenuIcon,
+      };
+    },
+  },
 });

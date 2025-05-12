@@ -1,223 +1,181 @@
 import { InfoOutlineIcon, BarChartIcon, ComponentIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
-// Define field groups
-const statsGroups = [
-	{
-		name: "content",
-		title: "Content",
-		icon: InfoOutlineIcon,
-		default: true,
-	},
-	{
-		name: "layout",
-		title: "Layout Options",
-		icon: ComponentIcon,
-	},
-	{
-		name: "stats",
-		title: "Statistics",
-		icon: BarChartIcon,
-	},
-	{
-		name: "translations",
-		title: "Translations",
-		icon: InfoOutlineIcon,
-	},
-];
-
 export const statsSection = defineType({
-	name: "statsSection",
-	title: "Stats Section",
-	type: "object",
-	icon: BarChartIcon,
-	groups: statsGroups,
-	fields: [
-		defineField({
-			name: "variant",
-			type: "string",
-			title: "Layout Variant",
-			group: "layout",
-			options: {
-				list: [
-					{ title: "Stats Grid", value: "grid" },
-					{ title: "Stats with Content", value: "withContent" },
-				],
-			},
-			initialValue: "grid",
-		}),
-		defineField({
-			name: "badgeText",
-			type: "string",
-			title: "Badge Text",
-			description: "Text to display in the badge (used in With Content layout)",
-			hidden: ({ parent }) => parent?.variant !== "withContent",
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_badgeText",
-			type: "internationalizedArrayString",
-			title: "Badge Text (Translated)",
-			hidden: ({ parent }) => parent?.variant !== "withContent",
-		}),
-		defineField({
-			name: "contentHeading",
-			type: "string",
-			title: "Content Heading",
-			description:
-				"Main heading for content section (used in With Content layout)",
-			hidden: ({ parent }) => parent?.variant !== "withContent",
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_contentHeading",
-			type: "internationalizedArrayString",
-			title: "Content Heading (Translated)",
-			hidden: ({ parent }) => parent?.variant !== "withContent",
-		}),
-		defineField({
-			name: "contentText",
-			type: "text",
-			title: "Content Text",
-			description:
-				"Descriptive text for content section (used in With Content layout)",
-			rows: 4,
-			hidden: ({ parent }) => parent?.variant !== "withContent",
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_contentText",
-			type: "internationalizedArrayText",
-			title: "Content Text (Translated)",
-			hidden: ({ parent }) => parent?.variant !== "withContent",
-		}),
-		defineField({
-			name: "heading",
-			type: "string",
-			title: "Section Heading",
-			description:
-				"Optional heading above the stats (used in Stats Grid layout)",
-			hidden: ({ parent }) => parent?.variant !== "grid",
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_heading",
-			type: "internationalizedArrayString",
-			title: "Section Heading (Translated)",
-			hidden: ({ parent }) => parent?.variant !== "grid",
-		}),
-		defineField({
-			name: "subheading",
-			type: "text",
-			title: "Section Subheading",
-			description:
-				"Optional subheading above the stats (used in Stats Grid layout)",
-			rows: 2,
-			hidden: ({ parent }) => parent?.variant !== "grid",
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_subheading",
-			type: "internationalizedArrayText",
-			title: "Section Subheading (Translated)",
-			hidden: ({ parent }) => parent?.variant !== "grid",
-		}),
-		defineField({
-			name: "stats",
-			type: "array",
-			title: "Stats",
-			description: "Add stat cards to display metrics",
-			group: "stats",
-			of: [
-				{
-					type: "object",
-					name: "stat",
-					fields: [
-						{
-							name: "value",
-							type: "string",
-							title: "Value",
-							description: "The primary statistic (e.g., '500.000', '$1052')",
-							validation: (rule) => rule.required(),
-						},
-						{
-							name: "label",
-							type: "string",
-							title: "Label",
-							description: "Description of what the statistic represents",
-							validation: (rule) => rule.required(),
-						},
-						{
-							name: "i18n_label",
-							type: "internationalizedArrayString",
-							title: "Label (Translated)",
-						},
-						{
-							name: "trendDirection",
-							type: "string",
-							title: "Trend Direction",
-							options: {
-								list: [
-									{ title: "Up", value: "up" },
-									{ title: "Down", value: "down" },
-									{ title: "None", value: "none" },
-								],
-								layout: "radio",
-							},
-							initialValue: "none",
-						},
-						{
-							name: "trendValue",
-							type: "string",
-							title: "Trend Value",
-							description: "Percentage change (e.g., '+20.1%', '-2%')",
-						},
-						{
-							name: "color",
-							type: "string",
-							title: "Icon Color",
-							options: {
-								list: [
-									{ title: "Primary", value: "primary" },
-									{ title: "Success", value: "success" },
-									{ title: "Warning", value: "warning" },
-									{ title: "Destructive", value: "destructive" },
-									{ title: "Muted", value: "muted" },
-								],
-							},
-							initialValue: "primary",
-						},
-					],
-					preview: {
-						select: {
-							value: "value",
-							label: "label",
-							trend: "trendValue",
-						},
-						prepare({ value, label, trend }) {
-							return {
-								title: value || "Stat",
-								subtitle: `${label || ""}${trend ? ` (${trend})` : ""}`,
-							};
-						},
-					},
-				},
-			],
-			validation: (rule) => rule.min(1).error("Add at least one stat"),
-		}),
-	],
-	preview: {
-		select: {
-			title: "heading",
-			statsCount: "stats.length",
-			variant: "variant",
-		},
-		prepare({ title, statsCount = 0, variant }) {
-			return {
-				title: title || "Stats Section",
-				subtitle: `${variant || "grid"} - ${statsCount} stat${statsCount === 1 ? "" : "s"}`,
-				media: BarChartIcon,
-			};
-		},
-	},
+  name: "statsSection",
+  title: "Seção de Estatísticas",
+  type: "object",
+  icon: BarChartIcon,
+  groups: [
+    {
+      name: "content",
+      title: "Conteúdo",
+      icon: InfoOutlineIcon,
+      default: true,
+    },
+    {
+      name: "layout",
+      title: "Opções de Layout",
+      icon: ComponentIcon,
+    },
+    {
+      name: "stats",
+      title: "Estatísticas",
+      icon: BarChartIcon,
+    },
+  ],
+  fields: [
+    defineField({
+      name: "variant",
+      title: "Variante de Layout",
+      type: "string",
+      group: "layout",
+      options: {
+        list: [
+          { title: "Grade de Estatísticas", value: "grid" },
+          { title: "Estatísticas com Conteúdo", value: "withContent" },
+        ],
+      },
+      initialValue: "grid",
+    }),
+    defineField({
+      name: "badgeText",
+      title: "Texto do Emblema",
+      type: "string",
+      description: "Texto a ser exibido no emblema (usado no layout Com Conteúdo)",
+      hidden: ({ parent }) => parent?.variant !== "withContent",
+      group: "content",
+    }),
+    defineField({
+      name: "contentHeading",
+      title: "Título do Conteúdo",
+      type: "string",
+      description:
+        "Título principal para a seção de conteúdo (usado no layout Com Conteúdo)",
+      hidden: ({ parent }) => parent?.variant !== "withContent",
+      group: "content",
+    }),
+    defineField({
+      name: "contentText",
+      title: "Texto do Conteúdo",
+      type: "text",
+      description:
+        "Texto descritivo para a seção de conteúdo (usado no layout Com Conteúdo)",
+      rows: 4,
+      hidden: ({ parent }) => parent?.variant !== "withContent",
+      group: "content",
+    }),
+    defineField({
+      name: "heading",
+      title: "Título da Seção",
+      type: "string",
+      description:
+        "Título opcional acima das estatísticas (usado no layout Grade de Estatísticas)",
+      hidden: ({ parent }) => parent?.variant !== "grid",
+      group: "content",
+    }),
+    defineField({
+      name: "subheading",
+      title: "Subtítulo da Seção",
+      type: "text",
+      description:
+        "Subtítulo opcional acima das estatísticas (usado no layout Grade de Estatísticas)",
+      rows: 2,
+      hidden: ({ parent }) => parent?.variant !== "grid",
+      group: "content",
+    }),
+    defineField({
+      name: "stats",
+      title: "Estatísticas",
+      type: "array",
+      description: "Adicione cartões de estatísticas para exibir métricas",
+      group: "stats",
+      of: [
+        {
+          type: "object",
+          name: "stat",
+          title: "Estatística",
+          fields: [
+            {
+              name: "value",
+              title: "Valor",
+              type: "string",
+              description: "A estatística principal (ex: '500.000', 'R$1052')",
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: "label",
+              title: "Rótulo",
+              type: "string",
+              description: "Descrição do que a estatística representa",
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: "trendDirection",
+              title: "Direção da Tendência",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Para Cima", value: "up" },
+                  { title: "Para Baixo", value: "down" },
+                  { title: "Nenhuma", value: "none" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "none",
+            },
+            {
+              name: "trendValue",
+              title: "Valor da Tendência",
+              type: "string",
+              description: "Mudança percentual (ex: '+20.1%', '-2%')",
+            },
+            {
+              name: "color",
+              title: "Cor do Ícone",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Primária", value: "primary" },
+                  { title: "Sucesso", value: "success" },
+                  { title: "Aviso", value: "warning" },
+                  { title: "Destrutiva", value: "destructive" },
+                  { title: "Suave", value: "muted" },
+                ],
+              },
+              initialValue: "primary",
+            },
+          ],
+          preview: {
+            select: {
+              value: "value",
+              label: "label",
+              trend: "trendValue",
+            },
+            prepare({ value, label, trend }) {
+              return {
+                title: value || "Estatística",
+                subtitle: `${label || ""}${trend ? ` (${trend})` : ""}`,
+              };
+            },
+          },
+        },
+      ],
+      validation: (rule) => rule.min(1).error("Adicione pelo menos uma estatística"),
+    }),
+  ],
+  preview: {
+    select: {
+      title: "heading",
+      statsCount: "stats.length",
+      variant: "variant",
+    },
+    prepare({ title, variant }) {
+      return {
+        title: title || "Seção de Estatísticas",
+        subtitle: `${variant || "grid"}`,
+        media: BarChartIcon,
+      };
+    },
+  },
 });

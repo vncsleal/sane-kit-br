@@ -1,276 +1,288 @@
 import {
-	SparklesIcon,
-	InfoOutlineIcon,
-	ImageIcon,
-	ComponentIcon,
+  SparklesIcon,
+  InfoOutlineIcon,
+  ImageIcon,
+  ComponentIcon,
 } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
-// Define field groups
-const featureGroups = [
-	{
-		name: "content",
-		title: "Content",
-		icon: InfoOutlineIcon,
-		default: true,
-	},
-	{
-		name: "appearance",
-		title: "Appearance",
-		icon: ComponentIcon,
-	},
-	{
-		name: "media",
-		title: "Media",
-		icon: ImageIcon,
-	},
-	{
-		name: "features",
-		title: "Features",
-		icon: SparklesIcon,
-	},
+const layoutVariants = [
+  { title: "Padrão", value: "default" },
+  { title: "Com Imagem", value: "withImage" },
+  { title: "Imagem à Esquerda", value: "leftImage" },
+  { title: "Imagem à Direita", value: "rightImage" },
+  { title: "Cartões com Imagem", value: "imageCards" },
+  { title: "Grade Masonry", value: "masonryGrid" },
+  { title: "Grade Masonry Grande", value: "bigMasonryGrid" },
+  { title: "Recurso em Carrossel", value: "carouselFeature" },
+  { title: "Comparação Deslizante", value: "slidingComparison" },
+];
+
+const featureIcons = [
+  { title: "Usuário", value: "user" },
+  { title: "Configurações", value: "settings" },
+  { title: "Cadeado", value: "lock" },
+  { title: "Estrela", value: "star" },
+  { title: "Coração", value: "heart" },
+  { title: "Gráfico", value: "barChart" },
+  { title: "Dólar", value: "dollar" },
+  { title: "Calendário", value: "calendar" },
+  { title: "Relógio", value: "clock" },
+  { title: "Email", value: "mail" },
+];
+
+const highlightedOptions = [
+  { title: "Sim", value: "true" },
+  { title: "Não", value: "false" },
 ];
 
 export const featureSection = defineType({
-	name: "featureSection",
-	title: "Feature Section",
-	type: "object",
-	icon: SparklesIcon,
-	groups: featureGroups,
-	fields: [
-		defineField({
-			name: "variant",
-			type: "string",
-			title: "Layout Variant",
-			group: "appearance",
-			options: {
-				list: [
-					{ title: "Default", value: "default" },
-					{ title: "With Image", value: "withImage" },
-					{ title: "Left Image", value: "leftImage" },
-					{ title: "Right Image", value: "rightImage" },
-					{ title: "Image Cards", value: "imageCards" },
-					{ title: "Masonry Grid", value: "masonryGrid" },
-					{ title: "Big Masonry Grid", value: "bigMasonryGrid" },
-					{ title: "Carousel Feature", value: "carouselFeature" },
-					{ title: "Sliding Comparison", value: "slidingComparison" },
-				],
-			},
-			initialValue: "default",
-		}),
-		defineField({
-			name: "badgeText",
-			type: "string",
-			title: "Badge Text",
-			description: "Optional text to display in the badge (e.g. 'Platform')",
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_badgeText",
-			type: "internationalizedArrayString",
-			title: "Badge Text (Translated)",
-			description: "Optional text to display in the badge (translated)",
-			group: "content",
-		}),
-		defineField({
-			name: "heading",
-			type: "string",
-			title: "Heading",
-			validation: (rule) => rule.required(),
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_heading",
-			type: "internationalizedArrayString",
-			title: "Heading (Translated)",
-			group: "content",
-		}),
-		defineField({
-			name: "subheading",
-			type: "text",
-			title: "Subheading",
-			rows: 2,
-			group: "content",
-		}),
-		defineField({
-			name: "i18n_subheading",
-			type: "internationalizedArrayText",
-			title: "Subheading (Translated)",
-			group: "content",
-		}),
-		defineField({
-			name: "image",
-			type: "image",
-			title: "Image",
-			description:
-				"Image to display in the feature section (for 'With Image' variant)",
-			options: {
-				hotspot: true,
-			},
-			fields: [
-				{
-					name: "alt",
-					type: "string",
-					title: "Alternative Text",
-					hidden: false,
-				},
-				{
-					name: "i18n_alt",
-					type: "internationalizedArrayString",
-					title: "Alternative Text (Translated)",
-					hidden: false,
-				},
-			],
-			hidden: ({ parent }) =>
-				parent?.variant !== "withImage" &&
-				parent?.variant !== "slidingComparison",
-			group: "media",
-		}),
-		defineField({
-			name: "comparisonImage",
-			type: "image",
-			title: "Comparison Image",
-			description:
-				"Second image used for the sliding comparison variant (usually dark mode version)",
-			options: {
-				hotspot: true,
-			},
-			fields: [
-				{
-					name: "alt",
-					type: "string",
-					title: "Alternative Text",
-					hidden: false,
-				},
-				{
-					name: "i18n_alt",
-					type: "internationalizedArrayString",
-					title: "Alternative Text (Translated)",
-					hidden: false,
-				},
-			],
-			hidden: ({ parent }) => parent?.variant !== "slidingComparison",
-			group: "media",
-		}),
-		defineField({
-			name: "features",
-			type: "array",
-			title: "Features",
-			group: "features",
-			of: [
-				{
-					type: "object",
-					name: "feature",
-					fields: [
-						defineField({
-							name: "title",
-							type: "string",
-							title: "Feature Title",
-							validation: (rule) => rule.required(),
-						}),
-						defineField({
-							name: "i18n_title",
-							type: "internationalizedArrayString",
-							title: "Feature Title (Translated)",
-						}),
-						defineField({
-							name: "description",
-							type: "text",
-							title: "Feature Description",
-							rows: 2,
-						}),
-						defineField({
-							name: "i18n_description",
-							type: "internationalizedArrayText",
-							title: "Feature Description (Translated)",
-						}),
-						defineField({
-							name: "icon",
-							type: "string",
-							title: "Icon",
-							description:
-								"Icon to display for this feature (used in Masonry Grid variant)",
-							options: {
-								list: [
-									{ title: "User", value: "user" },
-									{ title: "Settings", value: "settings" },
-									{ title: "Lock", value: "lock" },
-									{ title: "Star", value: "star" },
-									{ title: "Heart", value: "heart" },
-									{ title: "Chart", value: "barChart" },
-									{ title: "Dollar", value: "dollar" },
-									{ title: "Calendar", value: "calendar" },
-									{ title: "Clock", value: "clock" },
-									{ title: "Mail", value: "mail" },
-								],
-							},
-							hidden: ({ document }) => document?.variant !== "masonryGrid",
-						}),
-						defineField({
-							name: "highlighted",
-							type: "boolean",
-							title: "Highlighted (Wide Card)",
-							description:
-								"When enabled, this feature card will span 2 columns in masonry grid layout",
-							initialValue: false,
-							hidden: ({ document }) => document?.variant !== "masonryGrid",
-						}),
-						defineField({
-							name: "image",
-							type: "image",
-							title: "Feature Image",
-							description:
-								"Image for this feature (required for Image Cards variant)",
-							options: {
-								hotspot: true,
-							},
-							fields: [
-								{
-									name: "alt",
-									type: "string",
-									title: "Alternative Text",
-									hidden: false,
-								},
-								{
-									name: "i18n_alt",
-									type: "internationalizedArrayString",
-									title: "Alternative Text (Translated)",
-									hidden: false,
-								},
-							],
-						}),
-					],
-					preview: {
-						select: {
-							title: "title",
-							subtitle: "description",
-							media: "image",
-						},
-						prepare({ title, subtitle, media }) {
-							return {
-								title: title || "Feature",
-								subtitle: subtitle || "No description",
-								media: media || SparklesIcon,
-							};
-						},
-					},
-				},
-			],
-			validation: (rule) => rule.min(1).error("Add at least one feature"),
-		}),
-	],
-	preview: {
-		select: {
-			title: "heading",
-			subtitle: "variant",
-			featuresCount: "features.length",
-		},
-		prepare({ title, subtitle, featuresCount = 0 }) {
-			return {
-				title: title || "Feature Section",
-				subtitle: `${subtitle} variant with ${featuresCount} feature${featuresCount === 1 ? "" : "s"}`,
-				media: SparklesIcon,
-			};
-		},
-	},
+  name: "featureSection",
+  title: "Seção de Recursos",
+  type: "object",
+  icon: SparklesIcon,
+  groups: [
+    {
+      name: "content",
+      title: "Conteúdo",
+      icon: InfoOutlineIcon,
+      default: true,
+    },
+    {
+      name: "appearance",
+      title: "Aparência",
+      icon: ComponentIcon,
+    },
+    {
+      name: "media",
+      title: "Mídia",
+      icon: ImageIcon,
+    },
+    {
+      name: "features",
+      title: "Recursos",
+      icon: SparklesIcon,
+    },
+  ],
+  fields: [
+    defineField({
+      name: "variant",
+      title: "Variante de Layout",
+      type: "string",
+      group: "appearance",
+      options: {
+        list: layoutVariants,
+      },
+      initialValue: "default",
+    }),
+    defineField({
+      name: "badgeText",
+      title: "Texto do Emblema",
+      type: "string",
+      description: "Texto opcional para exibir no emblema (ex: 'Plataforma')",
+      group: "content",
+      validation: (rule) =>
+        rule
+          .max(40)
+          .warning(
+            "Textos de emblema concisos são mais eficazes (idealmente < 30 caracteres).",
+          ),
+    }),
+    defineField({
+      name: "heading",
+      title: "Título",
+      type: "string",
+      validation: (rule) =>
+        rule.required().error("O título da seção de recursos é obrigatório."),
+      group: "content",
+    }),
+    defineField({
+      name: "subheading",
+      title: "Subtítulo",
+      type: "text",
+      rows: 2,
+      group: "content",
+      validation: (rule) =>
+        rule
+          .max(250)
+          .warning(
+            "Subtítulos concisos são mais eficazes (idealmente < 180 caracteres).",
+          ),
+    }),
+    defineField({
+      name: "image",
+      title: "Imagem",
+      type: "image",
+      description:
+        "Imagem para exibir na seção de recursos (para variante 'Com Imagem')",
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Texto Alternativo",
+          type: "string",
+          validation: (rule) =>
+            rule
+              .required()
+              .error(
+                "O texto alternativo é obrigatório para a imagem principal.",
+              ),
+        }),
+      ],
+      hidden: ({ parent }) =>
+        parent?.variant !== "withImage" &&
+        parent?.variant !== "slidingComparison",
+      group: "media",
+    }),
+    defineField({
+      name: "comparisonImage",
+      title: "Imagem de Comparação",
+      type: "image",
+      description:
+        "Segunda imagem usada para a variante de comparação deslizante (geralmente versão em modo escuro)",
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Texto Alternativo",
+          type: "string",
+          validation: (rule) =>
+            rule
+              .required()
+              .error(
+                "O texto alternativo é obrigatório para a imagem de comparação.",
+              ),
+        }),
+      ],
+      hidden: ({ parent }) => parent?.variant !== "slidingComparison",
+      group: "media",
+    }),
+    defineField({
+      name: "features",
+      title: "Recursos",
+      type: "array",
+      group: "features",
+      of: [
+        defineField({
+          type: "object",
+          name: "feature",
+          title: "Recurso",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Título do Recurso",
+              type: "string",
+              validation: (rule) =>
+                rule
+                  .required()
+                  .error("O título do recurso é obrigatório.")
+                  .max(100)
+                  .warning(
+                    "Títulos de recurso concisos são melhores (idealmente < 80 caracteres).",
+                  ),
+            }),
+            defineField({
+              name: "description",
+              title: "Descrição do Recurso",
+              type: "text",
+              rows: 2,
+              validation: (rule) =>
+                rule
+                  .max(200)
+                  .warning(
+                    "Descrições de recurso concisas são mais eficazes (idealmente < 150 caracteres).",
+                  ),
+            }),
+            defineField({
+              name: "icon",
+              title: "Ícone",
+              type: "string",
+              description:
+                "Ícone para exibir para este recurso (usado na variante Grade Masonry)",
+              options: {
+                list: featureIcons,
+                layout: "radio",
+              },
+              hidden: ({ parent }) => parent?.variant !== "masonryGrid",
+            }),
+            defineField({
+              name: "highlighted",
+              title: "Destacado (Cartão Largo)",
+              type: "string",
+              options: {
+                list: highlightedOptions,
+                layout: "radio",
+              },
+              description:
+                "Quando habilitado, este cartão de recurso ocupará 2 colunas no layout de grade masonry",
+              initialValue: "false",
+              hidden: ({ parent }) => parent?.variant !== "masonryGrid",
+            }),
+            defineField({
+              name: "image",
+              title: "Imagem do Recurso",
+              type: "image",
+              description:
+                "Imagem para este recurso (necessária para a variante Cartões com Imagem)",
+              options: {
+                hotspot: true,
+              },
+              fields: [
+                defineField({
+                  name: "alt",
+                  title: "Texto Alternativo",
+                  type: "string",
+                  validation: (rule) =>
+                    rule
+                      .required()
+                      .error(
+                        "O texto alternativo é obrigatório para a imagem do recurso.",
+                      ),
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              subtitle: "description",
+              media: "image",
+              icon: "icon",
+            },
+            prepare({ title, subtitle, media, icon }) {
+              const selectedIcon = featureIcons.find(i => i.value === icon);
+              const iconTitle = selectedIcon ? selectedIcon.title : icon;
+              return {
+                title: title || "Recurso",
+                subtitle: subtitle || (icon ? `Ícone: ${iconTitle}` : "Sem descrição"),
+                media: media || SparklesIcon,
+              };
+            },
+          },
+        }),
+      ],
+      validation: (rule) =>
+        rule.min(1).error("Adicione pelo menos um recurso."),
+    }),
+  ],
+  preview: {
+    select: {
+      title: "heading",
+      variant: "variant",
+      featuresCount: "features.length",
+    },
+    prepare({ title, variant, featuresCount = 0 }) {
+      const selectedVariant = layoutVariants.find(v => v.value === variant);
+      const variantTitle = selectedVariant ? selectedVariant.title : variant;
+      return {
+        title: title || "Seção de Recursos",
+        subtitle: `${variantTitle || "Padrão"}`,
+        media: SparklesIcon,
+      };
+    },
+  },
 });
