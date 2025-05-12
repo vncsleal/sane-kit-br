@@ -35,5 +35,3 @@ next-env.d.ts
 # IDE - VS Code settings directory
 /.vscode
 
-# GitHub specific files and workflows
-/.github
