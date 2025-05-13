@@ -14,42 +14,25 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useLanguage } from "@/lib/language-context";
 import type { SanityContactSection } from "@/sanity/types/schema";
 
 export default function ContactSection({
-	badgeText = "Contact",
-	i18n_badgeText,
-	heading = "Something new",
-	i18n_heading,
+	badgeText = "Contato",
+	heading = "Algo novo",
 	description,
-	i18n_description,
 	features = [],
-	formTitle = "Book a meeting",
-	i18n_formTitle,
+	formTitle = "Agendar uma reunião",
 	formFields = {
 		showDate: true,
 		showFirstName: true,
 		showLastName: true,
 		showFileUpload: true,
-		fileUploadLabel: "Upload resume",
+		fileUploadLabel: "Enviar currículo",
 	},
-	buttonText = "Book the meeting",
-	i18n_buttonText,
+	buttonText = "Agendar a reunião",
 	buttonIcon = "arrowRight",
 }: SanityContactSection) {
-	const { getLocalizedValue } = useLanguage();
 	const [date, setDate] = useState<Date | undefined>(new Date());
-
-	const localizedBadgeText = getLocalizedValue(i18n_badgeText, badgeText);
-	const localizedHeading = getLocalizedValue(i18n_heading, heading);
-	const localizedDescription = getLocalizedValue(i18n_description, description);
-	const localizedFormTitle = getLocalizedValue(i18n_formTitle, formTitle);
-	const localizedFileUploadLabel = getLocalizedValue(
-		formFields?.i18n_fileUploadLabel,
-		formFields?.fileUploadLabel,
-	);
-	const localizedButtonText = getLocalizedValue(i18n_buttonText, buttonText);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -71,46 +54,36 @@ export default function ContactSection({
 						<div className="flex flex-col w-full gap-6 ">
 							<div className="flex flex-col items-start gap-4">
 								<div>
-									<Badge>{localizedBadgeText}</Badge>
+									<Badge>{badgeText}</Badge>
 								</div>
 								<div className="flex flex-col gap-2">
 									<h4 className="text-3xl md:text-5xl tracking-tighter max-w-xl text-left font-regular">
-										{localizedHeading}
+											{heading}
 									</h4>
-									{localizedDescription && (
+									{description && (
 										<p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-sm text-left">
-											{localizedDescription}
+											{description}
 										</p>
 									)}
 								</div>
 							</div>
 
-							{features.map((feature) => {
-								const localizedFeatureTitle = getLocalizedValue(
-									feature.i18n_title,
-									feature.title,
-								);
-								const localizedFeatureDescription = getLocalizedValue(
-									feature.i18n_description,
-									feature.description,
-								);
-								return (
-									<div
-										key={feature._key}
-										className="flex flex-row gap-6 items-start text-left"
-									>
-										<Check className="w-4 h-4 mt-2 text-primary" />
-										<div className="flex flex-col gap-1">
-											<p>{localizedFeatureTitle}</p>
-											{localizedFeatureDescription && (
-												<p className="text-muted-foreground text-sm">
-													{localizedFeatureDescription}
-												</p>
-											)}
-										</div>
+							{features.map((feature) => (
+								<div
+									key={feature._key}
+									className="flex flex-row gap-6 items-start text-left"
+								>
+									<Check className="w-4 h-4 mt-2 text-primary" />
+									<div className="flex flex-col gap-1">
+										<p>{feature.title}</p>
+										{feature.description && (
+											<p className="text-muted-foreground text-sm">
+												{feature.description}
+											</p>
+										)}
 									</div>
-								);
-							})}
+								</div>
+							))}
 						</div>
 					</div>
 
@@ -119,11 +92,11 @@ export default function ContactSection({
 							onSubmit={handleSubmit}
 							className="rounded-md max-w-sm w-full flex flex-col border p-8 gap-4"
 						>
-							<p>{localizedFormTitle}</p>
+							<p>{formTitle}</p>
 
 							{formFields.showDate && (
 								<div className="grid w-full max-w-sm items-center gap-1">
-									<Label htmlFor="date">Date</Label>
+									<Label htmlFor="date">Data</Label>
 									<Popover>
 										<PopoverTrigger asChild>
 											<Button
@@ -134,7 +107,7 @@ export default function ContactSection({
 												)}
 											>
 												<CalendarIcon className="mr-2 h-4 w-4" />
-												{date ? format(date, "PPP") : <span>Pick a date</span>}
+												{date ? format(date, "PPP") : <span>Escolha uma data</span>}
 											</Button>
 										</PopoverTrigger>
 										<PopoverContent className="w-auto p-0">
@@ -151,27 +124,27 @@ export default function ContactSection({
 
 							{formFields.showFirstName && (
 								<div className="grid w-full max-w-sm items-center gap-1">
-									<Label htmlFor="firstname">First name</Label>
+									<Label htmlFor="firstname">Nome</Label>
 									<Input id="firstname" type="text" required />
 								</div>
 							)}
 
 							{formFields.showLastName && (
 								<div className="grid w-full max-w-sm items-center gap-1">
-									<Label htmlFor="lastname">Last name</Label>
+									<Label htmlFor="lastname">Sobrenome</Label>
 									<Input id="lastname" type="text" required />
 								</div>
 							)}
 
 							{formFields.showFileUpload && (
 								<div className="grid w-full max-w-sm items-center gap-1">
-									<Label htmlFor="picture">{localizedFileUploadLabel}</Label>
+									<Label htmlFor="picture">{formFields.fileUploadLabel}</Label>
 									<Input id="picture" type="file" />
 								</div>
 							)}
 
 							<Button type="submit" className="gap-4 w-full">
-								{localizedButtonText}
+								{buttonText}
 								{ButtonIcon && <ButtonIcon className="w-4 h-4" />}
 							</Button>
 						</form>

@@ -26,28 +26,19 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useLanguage } from "@/lib/language-context";
 import type { SanityFeatureSection } from "@/sanity/types/schema";
 
 export default function FeatureSection({
 	variant = "default",
 	badgeText,
-	i18n_badgeText,
 	heading,
-	i18n_heading,
 	subheading,
-	i18n_subheading,
 	features = [],
 	image,
 	comparisonImage,
 }: SanityFeatureSection) {
-	const { getLocalizedValue } = useLanguage();
 	const [inset, setInset] = useState<number>(50);
 	const [onMouseDown, setOnMouseDown] = useState<boolean>(false);
-
-	const localizedBadgeText = getLocalizedValue(i18n_badgeText, badgeText);
-	const localizedHeading = getLocalizedValue(i18n_heading, heading);
-	const localizedSubheading = getLocalizedValue(i18n_subheading, subheading);
 
 	const IconMap: Record<string, React.ComponentType<LucideProps>> = {
 		user: User,
@@ -80,18 +71,18 @@ export default function FeatureSection({
 
 	const renderContent = () => (
 		<div className="flex gap-4 flex-col">
-			{localizedBadgeText && (
+				{badgeText && (
 				<div>
-					<Badge>{localizedBadgeText}</Badge>
+					<Badge>{badgeText}</Badge>
 				</div>
 			)}
 			<div className="flex gap-2 flex-col">
 				<h2 className="text-xl md:text-5xl tracking-tighter lg:max-w-xl font-regular text-left">
-					{localizedHeading}
+						{heading}
 				</h2>
-				{localizedSubheading && (
+				{subheading && (
 					<p className="text-lg max-w-xl lg:max-w-sm leading-relaxed tracking-tight text-muted-foreground text-left">
-						{localizedSubheading}
+						{subheading}
 					</p>
 				)}
 			</div>
@@ -104,11 +95,7 @@ export default function FeatureSection({
 				<div className="relative h-full w-full">
 					<Image
 						src={urlFor(image.asset._ref).url()}
-						alt={
-							getLocalizedValue(image.i18n_alt, image.alt) ||
-							localizedHeading ||
-							""
-						}
+							alt={image.alt || heading || ""}
 						fill
 						className="object-cover rounded-md"
 					/>
@@ -122,18 +109,18 @@ export default function FeatureSection({
 			<div className="w-full py-20 lg:py-40">
 				<div className="container mx-auto">
 					<div className="flex flex-col gap-4">
-						{localizedBadgeText && (
+							{badgeText && (
 							<div>
-								<Badge>{localizedBadgeText}</Badge>
+								<Badge>{badgeText}</Badge>
 							</div>
 						)}
 						<div className="flex gap-2 flex-col">
 							<h2 className="text-3xl md:text-5xl tracking-tighter lg:max-w-xl font-regular">
-								{localizedHeading}
+									{heading}
 							</h2>
-							{localizedSubheading && (
+							{subheading && (
 								<p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight text-muted-foreground">
-									{localizedSubheading}
+									{subheading}
 								</p>
 							)}
 						</div>
@@ -171,11 +158,7 @@ export default function FeatureSection({
 									</div>
 									<Image
 										src={urlFor(image.asset._ref).url()}
-										alt={
-											getLocalizedValue(image.i18n_alt, image.alt) ||
-											localizedHeading ||
-											""
-										}
+											alt={image.alt || heading || ""}
 										width={1920}
 										height={1080}
 										priority
@@ -186,14 +169,7 @@ export default function FeatureSection({
 									/>
 									<Image
 										src={urlFor(comparisonImage.asset._ref).url()}
-										alt={
-											getLocalizedValue(
-												comparisonImage.i18n_alt,
-												comparisonImage.alt,
-											) ||
-											`${localizedHeading} comparison` ||
-											""
-										}
+											alt={comparisonImage.alt || `${heading} comparison` || ""}
 										width={1920}
 										height={1080}
 										priority
@@ -223,18 +199,18 @@ export default function FeatureSection({
 				<div className="container mx-auto">
 					<div className="grid grid-cols-1 lg:grid-cols-2 justify-end items-end gap-10">
 						<div className="flex gap-4 flex-col items-start">
-							{localizedBadgeText && (
+								{badgeText && (
 								<div>
-									<Badge>{localizedBadgeText}</Badge>
+									<Badge>{badgeText}</Badge>
 								</div>
 							)}
 							<div className="flex gap-2 flex-col">
 								<h2 className="text-xl md:text-3xl lg:text-5xl tracking-tighter lg:max-w-xl font-regular text-left">
-									{localizedHeading}
+										{heading}
 								</h2>
-								{localizedSubheading && (
+								{subheading && (
 									<p className="text-lg max-w-xl lg:max-w-sm leading-relaxed tracking-tight text-muted-foreground text-left">
-										{localizedSubheading}
+										{subheading}
 									</p>
 								)}
 							</div>
@@ -244,14 +220,6 @@ export default function FeatureSection({
 								<CarouselContent>
 									{featuresWithImages.length > 0
 										? featuresWithImages.map((feature) => {
-												const localizedFeatureTitle = getLocalizedValue(
-													feature.i18n_title,
-													feature.title,
-												);
-												const localizedImageAlt = getLocalizedValue(
-													feature.image?.i18n_alt,
-													feature.image?.alt,
-												);
 												return (
 													<CarouselItem key={feature._key}>
 														<div className="rounded-md aspect-video bg-muted overflow-hidden">
@@ -259,11 +227,7 @@ export default function FeatureSection({
 																<div className="relative w-full h-full">
 																	<Image
 																		src={urlFor(feature.image.asset._ref).url()}
-																		alt={
-																			localizedImageAlt ||
-																			localizedFeatureTitle ||
-																			""
-																		}
+																			alt={feature.image.alt || feature.title || ""}
 																		fill
 																		className="object-cover"
 																	/>
@@ -271,7 +235,7 @@ export default function FeatureSection({
 															) : (
 																<div className="flex items-center justify-center p-6 h-full">
 																	<span className="text-sm">
-																		{localizedFeatureTitle}
+																		{feature.title}
 																	</span>
 																</div>
 															)}
@@ -283,7 +247,7 @@ export default function FeatureSection({
 												<CarouselItem key={placeholderKeys[index]}>
 													<div className="flex rounded-md aspect-video bg-muted items-center justify-center p-6">
 														<span className="text-sm">
-															Platform Screenshot {index + 1}
+															Captura de tela da plataforma {index + 1}
 														</span>
 													</div>
 												</CarouselItem>
@@ -305,18 +269,18 @@ export default function FeatureSection({
 				<div className="container mx-auto">
 					<div className="flex flex-col gap-10">
 						<div className="flex gap-4 flex-col items-start">
-							{localizedBadgeText && (
+								{badgeText && (
 								<div>
-									<Badge>{localizedBadgeText}</Badge>
+									<Badge>{badgeText}</Badge>
 								</div>
 							)}
 							<div className="flex gap-2 flex-col">
 								<h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
-									{localizedHeading}
+										{heading}
 								</h2>
-								{localizedSubheading && (
+								{subheading && (
 									<p className="text-lg max-w-xl lg:max-w-lg leading-relaxed tracking-tight text-muted-foreground text-left">
-										{localizedSubheading}
+										{subheading}
 									</p>
 								)}
 							</div>
@@ -332,19 +296,6 @@ export default function FeatureSection({
 								const isFirstCard = index === 0;
 								const isEighthCard = index === 7;
 
-								const localizedFeatureTitle = getLocalizedValue(
-									feature.i18n_title,
-									feature.title,
-								);
-								const localizedFeatureDescription = getLocalizedValue(
-									feature.i18n_description,
-									feature.description,
-								);
-								const localizedImageAlt = getLocalizedValue(
-									feature.image?.i18n_alt,
-									feature.image?.alt,
-								);
-
 								return (
 									<div
 										key={feature._key}
@@ -358,7 +309,7 @@ export default function FeatureSection({
 											<div className="absolute inset-0 w-full h-full">
 												<Image
 													src={urlFor(feature.image.asset._ref).url()}
-													alt={localizedImageAlt || localizedFeatureTitle || ""}
+														alt={feature.image.alt || feature.title || ""}
 													fill
 													className="object-cover"
 												/>
@@ -374,9 +325,9 @@ export default function FeatureSection({
 													feature.image?.asset?._ref ? "text-white" : ""
 												}`}
 											>
-												{localizedFeatureTitle}
+												{feature.title}
 											</h3>
-											{localizedFeatureDescription && (
+											{feature.description && (
 												<p
 													className={`max-w-xs text-base ${
 														feature.image?.asset?._ref
@@ -384,7 +335,7 @@ export default function FeatureSection({
 															: "text-muted-foreground"
 													}`}
 												>
-													{localizedFeatureDescription}
+													{feature.description}
 												</p>
 											)}
 										</div>
@@ -404,18 +355,18 @@ export default function FeatureSection({
 				<div className="container mx-auto">
 					<div className="flex flex-col gap-10">
 						<div className="flex gap-4 flex-col items-start">
-							{localizedBadgeText && (
+								{badgeText && (
 								<div>
-									<Badge>{localizedBadgeText}</Badge>
+									<Badge>{badgeText}</Badge>
 								</div>
 							)}
 							<div className="flex gap-2 flex-col">
 								<h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
-									{localizedHeading}
+										{heading}
 								</h2>
-								{localizedSubheading && (
+								{subheading && (
 									<p className="text-lg max-w-xl lg:max-w-lg leading-relaxed tracking-tight text-muted-foreground text-left">
-										{localizedSubheading}
+										{subheading}
 									</p>
 								)}
 							</div>
@@ -433,19 +384,6 @@ export default function FeatureSection({
 										Math.floor((index - 3) / 4) * 4 + 3 <= index &&
 										index <= Math.floor((index - 3) / 4) * 4 + 4);
 
-								const localizedFeatureTitle = getLocalizedValue(
-									feature.i18n_title,
-									feature.title,
-								);
-								const localizedFeatureDescription = getLocalizedValue(
-									feature.i18n_description,
-									feature.description,
-								);
-								const localizedImageAlt = getLocalizedValue(
-									feature.image?.i18n_alt,
-									feature.image?.alt,
-								);
-
 								return (
 									<div
 										key={feature._key}
@@ -460,7 +398,7 @@ export default function FeatureSection({
 											<div className="absolute inset-0 w-full h-full">
 												<Image
 													src={urlFor(feature.image.asset._ref).url()}
-													alt={localizedImageAlt || localizedFeatureTitle || ""}
+														alt={feature.image.alt || feature.title || ""}
 													fill
 													className="object-cover"
 												/>
@@ -480,9 +418,9 @@ export default function FeatureSection({
 														feature.image?.asset?._ref ? "text-white" : ""
 													}`}
 												>
-													{localizedFeatureTitle}
+													{feature.title}
 												</h3>
-												{localizedFeatureDescription && (
+												{feature.description && (
 													<p
 														className={`max-w-xs text-base ${
 															feature.image?.asset?._ref
@@ -490,7 +428,7 @@ export default function FeatureSection({
 																: "text-muted-foreground"
 														}`}
 													>
-														{localizedFeatureDescription}
+														{feature.description}
 													</p>
 												)}
 											</div>
@@ -511,36 +449,24 @@ export default function FeatureSection({
 				<div className="container mx-auto">
 					<div className="flex flex-col gap-10">
 						<div className="flex gap-4 flex-col items-start">
-							{localizedBadgeText && (
+								{badgeText && (
 								<div>
-									<Badge>{localizedBadgeText}</Badge>
+									<Badge>{badgeText}</Badge>
 								</div>
 							)}
 							<div className="flex gap-2 flex-col">
 								<h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
-									{localizedHeading}
+										{heading}
 								</h2>
-								{localizedSubheading && (
+								{subheading && (
 									<p className="text-lg max-w-xl lg:max-w-lg leading-relaxed tracking-tight text-muted-foreground text-left">
-										{localizedSubheading}
+										{subheading}
 									</p>
 								)}
 							</div>
 						</div>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 							{features.map((feature) => {
-								const localizedFeatureTitle = getLocalizedValue(
-									feature.i18n_title,
-									feature.title,
-								);
-								const localizedFeatureDescription = getLocalizedValue(
-									feature.i18n_description,
-									feature.description,
-								);
-								const localizedImageAlt = getLocalizedValue(
-									feature.image?.i18n_alt,
-									feature.image?.alt,
-								);
 								return (
 									<div key={feature._key} className="flex flex-col gap-2">
 										<div className="bg-muted rounded-md aspect-video mb-2">
@@ -548,9 +474,7 @@ export default function FeatureSection({
 												<div className="relative w-full h-full">
 													<Image
 														src={urlFor(feature.image.asset._ref).url()}
-														alt={
-															localizedImageAlt || localizedFeatureTitle || ""
-														}
+															alt={feature.image.alt || feature.title || ""}
 														fill
 														className="object-cover rounded-md"
 													/>
@@ -558,11 +482,11 @@ export default function FeatureSection({
 											)}
 										</div>
 										<h3 className="text-xl tracking-tight">
-											{localizedFeatureTitle}
+											{feature.title}
 										</h3>
-										{localizedFeatureDescription && (
+										{feature.description && (
 											<p className="text-muted-foreground text-base">
-												{localizedFeatureDescription}
+												{feature.description}
 											</p>
 										)}
 									</div>
@@ -612,32 +536,24 @@ export default function FeatureSection({
 					<div className="grid border rounded-lg py-8 px-8 grid-cols-1 gap-8 items-center lg:grid-cols-2">
 						<div className="flex gap-10 flex-col">
 							<div className="flex gap-4 flex-col">
-								{localizedBadgeText && (
+									{badgeText && (
 									<div>
-										<Badge variant="outline">{localizedBadgeText}</Badge>
+										<Badge variant="outline">{badgeText}</Badge>
 									</div>
 								)}
 								<div className="flex gap-2 flex-col">
 									<h2 className="text-3xl lg:text-5xl tracking-tighter max-w-xl text-left font-regular">
-										{localizedHeading}
+											{heading}
 									</h2>
-									{localizedSubheading && (
+									{subheading && (
 										<p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl text-left">
-											{localizedSubheading}
+											{subheading}
 										</p>
 									)}
 								</div>
 							</div>
 							<div className="grid lg:pl-6 grid-cols-1 sm:grid-cols-3 items-start lg:grid-cols-1 gap-6">
 								{features.map((feature) => {
-									const localizedFeatureTitle = getLocalizedValue(
-										feature.i18n_title,
-										feature.title,
-									);
-									const localizedFeatureDescription = getLocalizedValue(
-										feature.i18n_description,
-										feature.description,
-									);
 									return (
 										<div
 											key={feature._key}
@@ -645,10 +561,10 @@ export default function FeatureSection({
 										>
 											<Check className="w-4 h-4 mt-2 text-primary" />
 											<div className="flex flex-col gap-1">
-												<p>{localizedFeatureTitle}</p>
-												{localizedFeatureDescription && (
+												<p>{feature.title}</p>
+												{feature.description && (
 													<p className="text-muted-foreground text-sm">
-														{localizedFeatureDescription}
+														{feature.description}
 													</p>
 												)}
 											</div>
@@ -662,11 +578,7 @@ export default function FeatureSection({
 								<div className="relative h-full w-full">
 									<Image
 										src={urlFor(image.asset._ref).url()}
-										alt={
-											getLocalizedValue(image.i18n_alt, image.alt) ||
-											localizedHeading ||
-											""
-										}
+											alt={image.alt || heading || ""}
 										fill
 										className="object-cover rounded-md"
 									/>
@@ -684,32 +596,24 @@ export default function FeatureSection({
 			<div className="w-full py-20 lg:py-40">
 				<div className="container mx-auto">
 					<div className="flex gap-4 py-20 lg:py-40 flex-col items-start">
-						{localizedBadgeText && (
+							{badgeText && (
 							<div>
-								<Badge>{localizedBadgeText}</Badge>
+								<Badge>{badgeText}</Badge>
 							</div>
 						)}
 						<div className="flex gap-2 flex-col">
 							<h2 className="text-3xl md:text-5xl tracking-tighter lg:max-w-xl font-regular">
-								{localizedHeading}
+									{heading}
 							</h2>
-							{localizedSubheading && (
-								<p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight text-muted-foreground">
-									{localizedSubheading}
-								</p>
+							{subheading && (
+									<p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight text-muted-foreground">
+										{subheading}
+									</p>
 							)}
 						</div>
 						<div className="flex gap-10 pt-12 flex-col w-full">
 							<div className="grid grid-cols-2 items-start lg:grid-cols-3 gap-10">
 								{features.map((feature) => {
-									const localizedFeatureTitle = getLocalizedValue(
-										feature.i18n_title,
-										feature.title,
-									);
-									const localizedFeatureDescription = getLocalizedValue(
-										feature.i18n_description,
-										feature.description,
-									);
 									return (
 										<div
 											key={feature._key}
@@ -717,10 +621,10 @@ export default function FeatureSection({
 										>
 											<Check className="w-4 h-4 mt-2 text-primary" />
 											<div className="flex flex-col gap-1">
-												<p>{localizedFeatureTitle}</p>
-												{localizedFeatureDescription && (
+												<p>{feature.title}</p>
+												{feature.description && (
 													<p className="text-muted-foreground text-sm">
-														{localizedFeatureDescription}
+														{feature.description}
 													</p>
 												)}
 											</div>

@@ -15,7 +15,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { urlFor } from "@/sanity/client";
 import { MoveRight } from "lucide-react";
-import { useLanguage } from "@/lib/language-context";
 import { useState, useEffect } from "react";
 
 // Interface for fetched post data
@@ -25,9 +24,9 @@ export interface BlogPostWithData
 	categories?: SanityCategory[];
 }
 
-// Function to format date (can be moved to utils if used elsewhere)
+// Function to format date
 function formatDate(dateString: string) {
-	return new Date(dateString).toLocaleDateString("en-US", {
+	return new Date(dateString).toLocaleDateString("pt-BR", {
 		year: "numeric",
 		month: "short",
 		day: "numeric",
@@ -48,32 +47,20 @@ function getInitials(name: string) {
 // Main component remains a Client Component
 export default function BlogSection(props: SanityBlogSection) {
 	const {
-		heading = "Latest articles", // Default value
-		i18n_heading,
+		heading = "Artigos mais recentes", // Default value
 		subheading,
-		i18n_subheading,
 		postsToShow = 3,
 		showFeaturedPostLarge = true,
 		featuredPostsOnly = false,
 		variant = "default",
 		viewAllButton = false,
 		viewAllUrl = "/blog",
-		viewAllButtonText = "View all", // Default value
-		i18n_viewAllButtonText,
+		viewAllButtonText = "Ver todos", // Default value
 	} = props;
 
-	const { getLocalizedValue } = useLanguage(); // Use the hook for localization
 	const [posts, setPosts] = useState<BlogPostWithData[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
-	// Localize section texts using the hook
-	const localizedHeading = getLocalizedValue(i18n_heading, heading);
-	const localizedSubheading = getLocalizedValue(i18n_subheading, subheading);
-	const localizedViewAllButtonText = getLocalizedValue(
-		i18n_viewAllButtonText,
-		viewAllButtonText,
-	);
 
 	useEffect(() => {
 		const fetchPosts = async () => {
@@ -89,35 +76,27 @@ export default function BlogSection(props: SanityBlogSection) {
                     ${query}[0...${postsToShow}]{
                         _id,
                         title,
-                        i18n_title,
                         slug,
                         publishedAt,
                         excerpt,
-                        i18n_excerpt,
                         mainImage{
-                            ...,
-                            i18n_alt
+                            ...
                         },
                         featured,
                         "author": author->{
                             _id,
                             name,
-                            i18n_name,
                             slug,
                             avatar{
-                                ...,
-                                i18n_alt
+                                ...
                             },
-                            bio,
-                            i18n_bio
+                            bio
                         },
                         "categories": categories[]->{
                             _id,
                             title,
-                            i18n_title,
                             slug,
-                            description,
-                            i18n_description
+                            description
                         }
                     }
                 `);
@@ -151,7 +130,7 @@ export default function BlogSection(props: SanityBlogSection) {
 		return (
 			<section className="w-full py-20 lg:py-40">
 				<div className="container mx-auto px-4 md:px-6 text-center">
-					Loading posts...
+					Carregando posts...
 				</div>
 			</section>
 		);
@@ -175,7 +154,7 @@ export default function BlogSection(props: SanityBlogSection) {
 				<div className="container mx-auto flex flex-col gap-14">
 					<div className="flex w-full flex-col sm:flex-row sm:justify-between sm:items-center gap-8">
 						<h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
-							{localizedHeading}
+							{heading}
 						</h2>
 						{viewAllButton && (
 							<Button className="gap-4" asChild>
@@ -184,7 +163,7 @@ export default function BlogSection(props: SanityBlogSection) {
 										viewAllUrl.startsWith("/") ? viewAllUrl : `/${viewAllUrl}`
 									}
 								>
-									{localizedViewAllButtonText}
+									{viewAllButtonText}
 									<MoveRight className="w-4 h-4" />
 								</Link>
 							</Button>
@@ -193,7 +172,7 @@ export default function BlogSection(props: SanityBlogSection) {
 
 					{!hasPosts ? (
 						<div className="text-center py-20 text-muted-foreground">
-							No blog posts found.
+							Nenhum post encontrado.
 						</div>
 					) : (
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -207,12 +186,7 @@ export default function BlogSection(props: SanityBlogSection) {
 										{post.mainImage?.asset?._ref ? (
 											<Image
 												src={urlFor(post.mainImage).url()}
-												alt={
-													getLocalizedValue(
-														post.mainImage.i18n_alt,
-														post.mainImage.alt,
-													) || ""
-												}
+												alt={post.mainImage.alt || ""}
 												width={400}
 												height={225}
 												className="w-full h-full object-cover transition-transform group-hover:scale-105"
@@ -220,11 +194,11 @@ export default function BlogSection(props: SanityBlogSection) {
 										) : null}
 									</div>
 									<h3 className="text-xl tracking-tight group-hover:text-primary transition-colors">
-										{getLocalizedValue(post.i18n_title, post.title)}
+										{post.title}
 									</h3>
 									{post.excerpt && (
 										<p className="text-muted-foreground text-base line-clamp-2">
-											{getLocalizedValue(post.i18n_excerpt, post.excerpt)}
+											{post.excerpt}
 										</p>
 									)}
 								</Link>
@@ -244,11 +218,11 @@ export default function BlogSection(props: SanityBlogSection) {
 					{/* Heading and Subheading */}
 					<div className="flex flex-col gap-2">
 						<h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
-							{localizedHeading}
+							{heading}
 						</h2>
-						{localizedSubheading && (
+						{subheading && (
 							<p className="text-lg text-muted-foreground max-w-md">
-								{localizedSubheading}
+								{subheading}
 							</p>
 						)}
 					</div>
@@ -260,7 +234,7 @@ export default function BlogSection(props: SanityBlogSection) {
 									viewAllUrl.startsWith("/") ? viewAllUrl : `/${viewAllUrl}`
 								}
 							>
-								{localizedViewAllButtonText}
+								{viewAllButtonText}
 								<MoveRight className="w-4 h-4" />
 							</Link>
 						</Button>
@@ -269,7 +243,7 @@ export default function BlogSection(props: SanityBlogSection) {
 
 				{!hasPosts ? (
 					<div className="text-center py-20 text-muted-foreground">
-						No blog posts found.
+						Nenhum post encontrado.
 					</div>
 				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -283,12 +257,7 @@ export default function BlogSection(props: SanityBlogSection) {
 									{featuredPost.mainImage?.asset?._ref ? (
 										<Image
 											src={urlFor(featuredPost.mainImage).url()}
-											alt={
-												getLocalizedValue(
-													featuredPost.mainImage.i18n_alt,
-													featuredPost.mainImage.alt,
-												) || ""
-											}
+											alt={featuredPost.mainImage.alt || ""}
 											width={1200}
 											height={675}
 											className="w-full h-full object-cover"
@@ -298,39 +267,23 @@ export default function BlogSection(props: SanityBlogSection) {
 								<div className="flex flex-row gap-4 items-center flex-wrap">
 									{featuredPost.categories?.length ? (
 										<Badge>
-											{getLocalizedValue(
-												featuredPost.categories[0].i18n_title,
-												featuredPost.categories[0].title,
-											)}
+											{featuredPost.categories[0].title}
 										</Badge>
 									) : null}
 									<p className="flex flex-row gap-2 text-sm items-center">
-										<span className="text-muted-foreground">By</span>{" "}
+										<span className="text-muted-foreground">Por</span>{" "}
 										<Avatar className="h-6 w-6">
 											{featuredPost.author.avatar?.asset?._ref ? (
 												<AvatarImage
 													src={urlFor(featuredPost.author.avatar).url()}
-													alt={getLocalizedValue(
-														featuredPost.author.i18n_name,
-														featuredPost.author.name,
-													)}
+													alt={featuredPost.author.name}
 												/>
 											) : null}
 											<AvatarFallback>
-												{getInitials(
-													getLocalizedValue(
-														featuredPost.author.i18n_name,
-														featuredPost.author.name,
-													) || "",
-												)}
+												{getInitials(featuredPost.author.name || "")}
 											</AvatarFallback>
 										</Avatar>
-										<span>
-											{getLocalizedValue(
-												featuredPost.author.i18n_name,
-												featuredPost.author.name,
-											)}
-										</span>
+										<span>{featuredPost.author.name}</span>
 									</p>
 									{featuredPost.publishedAt && (
 										<span className="text-sm text-muted-foreground">
@@ -340,17 +293,11 @@ export default function BlogSection(props: SanityBlogSection) {
 								</div>
 								<div className="flex flex-col gap-2">
 									<h3 className="max-w-3xl text-4xl tracking-tight">
-										{getLocalizedValue(
-											featuredPost.i18n_title,
-											featuredPost.title,
-										)}
+										{featuredPost.title}
 									</h3>
 									{featuredPost.excerpt && (
 										<p className="max-w-3xl text-muted-foreground text-base">
-											{getLocalizedValue(
-												featuredPost.i18n_excerpt,
-												featuredPost.excerpt,
-											)}
+											{featuredPost.excerpt}
 										</p>
 									)}
 								</div>
@@ -368,12 +315,7 @@ export default function BlogSection(props: SanityBlogSection) {
 									{post.mainImage?.asset?._ref ? (
 										<Image
 											src={urlFor(post.mainImage).url()}
-											alt={
-												getLocalizedValue(
-													post.mainImage.i18n_alt,
-													post.mainImage.alt,
-												) || ""
-											}
+											alt={post.mainImage.alt || ""}
 											width={600}
 											height={337}
 											className="w-full h-full object-cover"
@@ -382,40 +324,22 @@ export default function BlogSection(props: SanityBlogSection) {
 								</div>
 								<div className="flex flex-row gap-4 items-center flex-wrap">
 									{post.categories?.length ? (
-										<Badge>
-											{getLocalizedValue(
-												post.categories[0].i18n_title,
-												post.categories[0].title,
-											)}
-										</Badge>
+										<Badge>{post.categories[0].title}</Badge>
 									) : null}
 									<p className="flex flex-row gap-2 text-sm items-center">
-										<span className="text-muted-foreground">By</span>{" "}
+										<span className="text-muted-foreground">Por</span>{" "}
 										<Avatar className="h-6 w-6">
 											{post.author.avatar?.asset?._ref ? (
 												<AvatarImage
 													src={urlFor(post.author.avatar).url()}
-													alt={getLocalizedValue(
-														post.author.i18n_name,
-														post.author.name,
-													)}
+													alt={post.author.name}
 												/>
 											) : null}
 											<AvatarFallback>
-												{getInitials(
-													getLocalizedValue(
-														post.author.i18n_name,
-														post.author.name,
-													) || "",
-												)}
+												{getInitials(post.author.name || "")}
 											</AvatarFallback>
 										</Avatar>
-										<span>
-											{getLocalizedValue(
-												post.author.i18n_name,
-												post.author.name,
-											)}
-										</span>
+										<span>{post.author.name}</span>
 									</p>
 									{post.publishedAt && (
 										<span className="text-sm text-muted-foreground">
@@ -425,11 +349,11 @@ export default function BlogSection(props: SanityBlogSection) {
 								</div>
 								<div className="flex flex-col gap-1">
 									<h3 className="max-w-3xl text-2xl tracking-tight">
-										{getLocalizedValue(post.i18n_title, post.title)}
+										{post.title}
 									</h3>
 									{post.excerpt && (
 										<p className="max-w-3xl text-muted-foreground text-base">
-											{getLocalizedValue(post.i18n_excerpt, post.excerpt)}
+											{post.excerpt}
 										</p>
 									)}
 								</div>

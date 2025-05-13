@@ -18,7 +18,6 @@ import type { SanityHeroSection } from "@/sanity/types/schema";
 import { urlFor } from "@/sanity/client";
 import Link from "next/link";
 import Image from "next/image";
-import { useLanguage } from "@/lib/language-context";
 
 const IconMap = {
 	arrowRight: MoveRight,
@@ -35,26 +34,13 @@ const IconMap = {
 
 export default function HeroSection({
 	heading,
-	i18n_heading,
 	subheading,
-	i18n_subheading,
 	variant = "buttonBanner",
 	bannerButton,
 	badgeText,
-	i18n_badgeText,
 	buttons = [],
 	media,
 }: SanityHeroSection) {
-	const { getLocalizedValue } = useLanguage();
-
-	const localizedHeading = getLocalizedValue(i18n_heading, heading);
-	const localizedSubheading = getLocalizedValue(i18n_subheading, subheading);
-	const localizedBadgeText = getLocalizedValue(i18n_badgeText, badgeText);
-	const localizedBannerButtonLabel = getLocalizedValue(
-		bannerButton?.i18n_label,
-		bannerButton?.label,
-	);
-
 	// Function to render background media for buttonBanner and badgeBanner variants
 	const renderBackgroundMedia = () => {
 		if (!media || media.type === "placeholder") return null;
@@ -65,7 +51,7 @@ export default function HeroSection({
 					<div className="absolute inset-0 bg-black/50 dark:bg-black/70 z-10" />
 					<Image
 						src={urlFor(media.image).url()}
-						alt={getLocalizedValue(media.image.i18n_alt, media.image.alt) || ""}
+						alt={media.image.alt || ""}
 						fill
 						className="object-cover z-0"
 						priority
@@ -101,9 +87,9 @@ export default function HeroSection({
 				className={`flex gap-4 flex-col ${variant !== "gridGallery" ? "items-center" : ""}`}
 			>
 				{(variant === "badgeBanner" || variant === "gridGallery") &&
-					localizedBadgeText && (
+					badgeText && (
 						<div>
-							<Badge variant="outline">{localizedBadgeText}</Badge>
+							<Badge variant="outline">{badgeText}</Badge>
 						</div>
 					)}
 				<div
@@ -116,9 +102,9 @@ export default function HeroSection({
 								: "text-center max-w-2xl"
 						}`}
 					>
-						{localizedHeading}
+							{heading}
 					</h1>
-					{localizedSubheading && (
+					{subheading && (
 						<p
 							className={`text-xl leading-relaxed tracking-tight text-muted-foreground ${
 								variant === "gridGallery"
@@ -126,7 +112,7 @@ export default function HeroSection({
 									: "text-center max-w-2xl"
 							}`}
 						>
-							{localizedSubheading}
+							{subheading}
 						</p>
 					)}
 				</div>
@@ -140,10 +126,6 @@ export default function HeroSection({
 					>
 						{buttons.map((button) => {
 							const Icon = button.icon ? IconMap[button.icon] : null;
-							const localizedButtonLabel = getLocalizedValue(
-								button.i18n_label,
-								button.label,
-							);
 							return (
 								<Button
 									key={button._key}
@@ -153,7 +135,7 @@ export default function HeroSection({
 									asChild
 								>
 									<Link href={button.url}>
-										{localizedButtonLabel}
+										{button.label}
 										{Icon && <Icon className="w-4 h-4" />}
 									</Link>
 								</Button>
@@ -174,11 +156,7 @@ export default function HeroSection({
 						<div className="relative aspect-video rounded-md overflow-hidden">
 							<Image
 								src={urlFor(media.image).url()}
-								alt={
-									getLocalizedValue(media.image.i18n_alt, media.image.alt) ||
-									localizedHeading ||
-									""
-								}
+								alt={media.image.alt || heading || ""}
 								fill
 								priority
 								className="object-cover"
@@ -196,7 +174,7 @@ export default function HeroSection({
 								className="absolute inset-0 w-full h-full"
 								allow={`${media.video.autoplay ? "autoplay;" : ""} fullscreen; picture-in-picture`}
 								allowFullScreen
-								title={`Video: ${localizedHeading}`}
+								title={`Video: ${heading}`}
 							/>
 						</div>
 					</div>
@@ -225,14 +203,7 @@ export default function HeroSection({
 									<div className="relative w-full h-full">
 										<Image
 											src={urlFor(media.image).url()}
-											alt={
-												getLocalizedValue(
-													media.image.i18n_alt,
-													media.image.alt,
-												) ||
-												localizedHeading ||
-												""
-											}
+											alt={media.image.alt || heading || ""}
 											fill
 											className="object-cover rounded-md"
 										/>
@@ -257,14 +228,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.image).url()}
-													alt={
-														getLocalizedValue(
-															media.image.i18n_alt,
-															media.image.alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.image.alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -276,14 +240,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.additionalImages[0]).url()}
-													alt={
-														getLocalizedValue(
-															media.additionalImages[0].i18n_alt,
-															media.additionalImages[0].alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.additionalImages[0].alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -299,14 +256,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.image).url()}
-													alt={
-														getLocalizedValue(
-															media.image.i18n_alt,
-															media.image.alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.image.alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -318,14 +268,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.additionalImages[0]).url()}
-													alt={
-														getLocalizedValue(
-															media.additionalImages[0].i18n_alt,
-															media.additionalImages[0].alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.additionalImages[0].alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -337,14 +280,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.additionalImages[1]).url()}
-													alt={
-														getLocalizedValue(
-															media.additionalImages[1].i18n_alt,
-															media.additionalImages[1].alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.additionalImages[1].alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -360,14 +296,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.image).url()}
-													alt={
-														getLocalizedValue(
-															media.image.i18n_alt,
-															media.image.alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.image.alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -379,14 +308,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.additionalImages[0]).url()}
-													alt={
-														getLocalizedValue(
-															media.additionalImages[0].i18n_alt,
-															media.additionalImages[0].alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.additionalImages[0].alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -398,14 +320,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.additionalImages[1]).url()}
-													alt={
-														getLocalizedValue(
-															media.additionalImages[1].i18n_alt,
-															media.additionalImages[1].alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.additionalImages[1].alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -417,14 +332,7 @@ export default function HeroSection({
 											<div className="relative w-full h-full">
 												<Image
 													src={urlFor(media.additionalImages[2]).url()}
-													alt={
-														getLocalizedValue(
-															media.additionalImages[2].i18n_alt,
-															media.additionalImages[2].alt,
-														) ||
-														localizedHeading ||
-														""
-													}
+													alt={media.additionalImages[2].alt || heading || ""}
 													fill
 													className="object-cover rounded-md"
 												/>
@@ -468,7 +376,7 @@ export default function HeroSection({
 											asChild
 										>
 											<Link href={bannerButton.url || ""}>
-												{localizedBannerButtonLabel}{" "}
+												{bannerButton.label}{" "}
 												<MoveRight className="w-4 h-4" />
 											</Link>
 										</Button>
@@ -476,10 +384,10 @@ export default function HeroSection({
 								</div>
 							)}
 							<div className="flex gap-4 flex-col">
-								{variant === "badgeBanner" && localizedBadgeText && (
+								{variant === "badgeBanner" && badgeText && (
 									<div className="flex justify-center">
 										<Badge variant={hasMedia ? "secondary" : "outline"}>
-											{localizedBadgeText}
+											{badgeText}
 										</Badge>
 									</div>
 								)}
@@ -488,15 +396,15 @@ export default function HeroSection({
 										hasMedia ? "text-white" : ""
 									}`}
 								>
-									{localizedHeading}
+									{heading}
 								</h1>
-								{localizedSubheading && (
+								{subheading && (
 									<p
 										className={`text-lg md:text-xl leading-relaxed tracking-tight text-center max-w-2xl ${
 											hasMedia ? "text-gray-100" : "text-muted-foreground"
 										}`}
 									>
-										{localizedSubheading}
+										{subheading}
 									</p>
 								)}
 							</div>
@@ -504,10 +412,6 @@ export default function HeroSection({
 								<div className="flex flex-row gap-3 flex-wrap justify-center">
 									{buttons.map((button) => {
 										const Icon = button.icon ? IconMap[button.icon] : null;
-										const localizedButtonLabel = getLocalizedValue(
-											button.i18n_label,
-											button.label,
-										);
 
 										const buttonVariantMap: Record<
 											string,
@@ -538,7 +442,7 @@ export default function HeroSection({
 												asChild
 											>
 												<Link href={button.url}>
-													{localizedButtonLabel}
+													{button.label}
 													{Icon && <Icon className="w-4 h-4" />}
 												</Link>
 											</Button>

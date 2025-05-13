@@ -1,137 +1,107 @@
 import { client } from "@/sanity/client";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getLocalizedValueServer } from "@/lib/localization-server";
-import { headers } from "next/headers";
 import type {
-	SanityAuthor,
-	SanityBlogPost,
-	SanityCategory,
+  SanityAuthor,
+  SanityBlogPost,
+  SanityCategory,
 } from "@/sanity/types/schema";
 import AuthorPageUI from "@/components/blog/AuthorPageUI";
 
-// Define a type for blog post with expanded fields and i18n
+// Define a type for blog post with expanded fields
 interface ExpandedBlogPost extends Omit<SanityBlogPost, "categories"> {
-	categories?: SanityCategory[];
+  categories?: SanityCategory[];
 }
 
 // Define PageProps with Promise for params
 interface PageProps {
-	params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 // Generate metadata for SEO
 export async function generateMetadata({
-	params,
+  params,
 }: PageProps): Promise<Metadata> {
-	const { slug } = await params; // Await the promise here
-	const author = await getAuthor(slug);
+  const { slug } = await params;
+  const author = await getAuthor(slug);
 
-	if (!author) {
-		return {
-			title: "Author Not Found",
-			description: "The requested author could not be found",
-		};
-	}
+  if (!author) {
+    return {
+      title: "Autor Não Encontrado",
+      description: "O autor solicitado não foi encontrado",
+    };
+  }
 
-	// Determine language key
-	const headersList = await headers();
-	const acceptLanguage = headersList.get("accept-language");
-	const preferredLanguage = acceptLanguage?.split(",")[0].split(";")[0];
-	let langKey = "en";
-	if (preferredLanguage?.startsWith("pt")) {
-		langKey = "pt_BR";
-	}
-
-	const localizedName = getLocalizedValueServer(
-		author.i18n_name,
-		author.name,
-		langKey,
-	);
-	const localizedBio = getLocalizedValueServer(
-		author.i18n_bio,
-		author.bio,
-		langKey,
-	);
-
-	return {
-		title: `${localizedName} - Author Profile`,
-		description: localizedBio || `Articles by ${localizedName}`,
-		// ... rest of metadata ...
-	};
+  return {
+    title: `${author.name} - Perfil do Autor`,
+    description: author.bio || `Artigos por ${author.name}`,
+  };
 }
 
-// Fetch the author by slug including i18n fields
+// Fetch the author by slug
 async function getAuthor(slug: string): Promise<SanityAuthor | null> {
-	return client.fetch(
-		`
+  return client.fetch(
+    `
     *[_type == "author" && slug.current == $slug][0]{
       _id,
       name,
-      i18n_name, // Fetch i18n
       slug,
       role,
-      i18n_role, // Fetch i18n
       bio,
-      i18n_bio, // Fetch i18n
       fullBio,
-      i18n_fullBio, // Fetch i18n
       email,
-      avatar{..., i18n_alt}, // Fetch i18n_alt
-      featuredImage{..., i18n_alt}, // Fetch i18n_alt
+      avatar,
+      featuredImage,
       socialLinks
     }
   `,
-		{ slug },
-	);
+    { slug }
+  );
 }
 
-// Fetch recent posts by author including i18n fields
+// Fetch recent posts by author
 async function getAuthorPosts(authorId: string): Promise<ExpandedBlogPost[]> {
-	return client.fetch(
-		`
+  return client.fetch(
+    `
     *[_type == "blogPost" && author._ref == $authorId] | order(publishedAt desc)[0...6]{
       _id,
       title,
-      i18n_title, // Fetch i18n
       slug,
       publishedAt,
       excerpt,
-      i18n_excerpt, // Fetch i18n
-      mainImage{..., i18n_alt}, // Fetch i18n_alt
+      mainImage,
       "categories": categories[]->{
         _id,
         title,
-        i18n_title, // Fetch i18n
         slug
       }
     }
   `,
-		{ authorId },
-	);
+    { authorId }
+  );
 }
 
 // Generate static paths for all authors
 export async function generateStaticParams() {
-	const authors = await client.fetch(`
+  const authors = await client.fetch(`
     *[_type == "author"]{ "slug": slug.current }
   `);
 
-	return authors.map((author: { slug: string }) => ({
-		slug: author.slug,
-	}));
+  return authors.map((author: { slug: string }) => ({
+    slug: author.slug,
+  }));
 }
 
 export default async function AuthorPage({ params }: PageProps) {
-	const { slug } = await params; // Await the promise here
-	const author = await getAuthor(slug);
+  const { slug } = await params;
+  const author = await getAuthor(slug);
 
-	if (!author) {
-		notFound();
-	}
+  if (!author) {
+    notFound();
+  }
 
-	const posts = await getAuthorPosts(author._id);
+  const posts = await getAuthorPosts(author._id);
 
-	// Pass fetched data to the client component
-	return <AuthorPageUI author={author} posts={posts} />;
+  // Pass fetched data to the client component
+  return <AuthorPageUI author={author} posts={posts} />;
 }

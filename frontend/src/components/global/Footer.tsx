@@ -2,46 +2,31 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useLanguage } from "@/lib/language-context";
 import type { SanityFooter } from "@/sanity/types/schema";
-import LanguageSwitcher from "@/components/global/LanguageSwitcher";
 import { urlFor } from "@/sanity/client";
-
-// Define translations for static text
-const staticText = {
-	allRightsReserved: {
-		en: "All rights reserved.",
-		pt_BR: "Todos os direitos reservados.",
-	},
-};
 
 type FooterProps = SanityFooter;
 
 export default function Footer({
 	title,
-	i18n_title,
 	logo,
 	description,
-	i18n_description,
 	address = [],
 	legalLinks = [],
 	navigationItems = [],
 	variant = "simple",
 }: FooterProps) {
-	const { getLocalizedValue, language } = useLanguage();
+	// Get site title
+	const siteTitle = title;
 
-	// Get localized site title
-	const siteTitle = getLocalizedValue(i18n_title, title);
+	// Get description
+	const siteDescription = description;
 
-	// Get localized description
-	const localizedDescription = getLocalizedValue(i18n_description, description);
+	// Get logo alt text
+	const logoAlt = logo?.alt || siteTitle;
 
-	// Get localized logo alt text
-	const logoAlt = getLocalizedValue(logo?.i18n_alt, logo?.alt) || siteTitle;
-
-	// Get localized "All rights reserved" text
-	const localizedRightsText =
-		staticText.allRightsReserved[language] || staticText.allRightsReserved.en;
+	// All rights reserved text
+	const allRightsReservedText = "All rights reserved.";
 
 	// Logo or site name component to reuse
 	const LogoOrSiteTitle = ({ className = "" }) => (
@@ -77,18 +62,17 @@ export default function Footer({
 										href={link.url.startsWith("/") ? link.url : `/${link.url}`}
 										className="text-muted-foreground hover:text-foreground transition-colors"
 									>
-										{getLocalizedValue(link.i18n_title, link.title)}
+											{link.title}
 									</Link>
 								))}
 							</div>
 						)}
 
-						{/* Copyright and Language Switcher */}
+						{/* Copyright */}
 						<div className="flex items-center gap-4">
 							<p className="text-muted-foreground">
-								© {new Date().getFullYear()} {siteTitle}. {localizedRightsText}
+								© {new Date().getFullYear()} {siteTitle}. {allRightsReservedText}
 							</p>
-							<LanguageSwitcher variant="minimal" />
 						</div>
 					</div>
 				</div>
@@ -113,7 +97,7 @@ export default function Footer({
 										href={link.url.startsWith("/") ? link.url : `/${link.url}`}
 										className="text-sm text-background/75 hover:text-background"
 									>
-										{getLocalizedValue(link.i18n_title, link.title)}
+										{link.title}
 									</Link>
 								))}
 							</div>
@@ -122,9 +106,8 @@ export default function Footer({
 						{/* Copyright */}
 						<div className="flex items-center gap-4">
 							<p className="text-sm text-background/60">
-								© {new Date().getFullYear()} {siteTitle}. {localizedRightsText}
+								© {new Date().getFullYear()} {siteTitle}. {allRightsReservedText}
 							</p>
-							<LanguageSwitcher variant="footer" />
 						</div>
 					</div>
 				</div>
@@ -143,9 +126,9 @@ export default function Footer({
 							<div className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
 								<LogoOrSiteTitle />
 							</div>
-							{(description || i18n_description) && (
+								{description && (
 								<p className="text-lg max-w-lg leading-relaxed tracking-tight text-background/75 text-left">
-									{localizedDescription}
+									{siteDescription}
 								</p>
 							)}
 						</div>
@@ -171,7 +154,7 @@ export default function Footer({
 											}
 											className="hover:text-background"
 										>
-											{getLocalizedValue(link.i18n_title, link.title)}
+												{link.title}
 										</Link>
 									))}
 								</div>
@@ -195,12 +178,12 @@ export default function Footer({
 											className="flex justify-between items-center hover:text-background/80"
 										>
 											<span className="text-xl">
-												{getLocalizedValue(item.i18n_title, item.title)}
+												{item.title}
 											</span>
 										</Link>
 									) : (
 										<p className="text-xl">
-											{getLocalizedValue(item.i18n_title, item.title)}
+											{item.title}
 										</p>
 									)}
 									{item.items?.map((subItem) => (
@@ -214,7 +197,7 @@ export default function Footer({
 											className="flex justify-between items-center hover:text-background/80"
 										>
 											<span className="text-background/75">
-												{getLocalizedValue(subItem.i18n_title, subItem.title)}
+												{subItem.title}
 											</span>
 										</Link>
 									))}
@@ -224,15 +207,12 @@ export default function Footer({
 					</div>
 				</div>
 
-				{/* Copyright text with Language Switcher */}
+				{/* Copyright text */}
 				<div className="mt-16 py-8 border-t border-background/10">
 					<div className="flex flex-col md:flex-row justify-between items-center">
 						<p className="text-sm text-background/60">
-							© {new Date().getFullYear()} {siteTitle}. {localizedRightsText}
+							© {new Date().getFullYear()} {siteTitle}. {allRightsReservedText}
 						</p>
-						<div className="mt-4 md:mt-0">
-							<LanguageSwitcher variant="footer" />
-						</div>
 					</div>
 				</div>
 			</div>

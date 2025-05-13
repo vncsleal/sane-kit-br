@@ -5,8 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
-import { useLanguage } from "@/lib/language-context"; // Import useLanguage
-import type { SanityCTASection } from "@/sanity/types/schema"; // Import the correct type
+import type { SanityCTASection } from "@/sanity/types/schema";
 
 // Define the button variant type to match Shadcn's Button component
 type ButtonVariant =
@@ -28,20 +27,10 @@ const IconMap = {
 export default function CTASection({
 	variant = "default",
 	badgeText,
-	i18n_badgeText, // Add i18n prop
 	heading,
-	i18n_heading, // Add i18n prop
 	subheading,
-	i18n_subheading, // Add i18n prop
 	buttons = [],
 }: SanityCTASection) {
-	const { getLocalizedValue } = useLanguage(); // Use the hook
-
-	// Localize texts
-	const localizedBadgeText = getLocalizedValue(i18n_badgeText, badgeText);
-	const localizedHeading = getLocalizedValue(i18n_heading, heading);
-	const localizedSubheading = getLocalizedValue(i18n_subheading, subheading);
-
 	// If using full variant, we need a different structure
 	if (variant === "full") {
 		return (
@@ -49,20 +38,20 @@ export default function CTASection({
 				<div className="container mx-auto">
 					<div className="flex flex-col text-center py-14 gap-4 items-center">
 						{/* Badge */}
-						{localizedBadgeText && ( // Use localized text
+							{badgeText && (
 							<div>
-								<Badge>{localizedBadgeText}</Badge>
+								<Badge>{badgeText}</Badge>
 							</div>
 						)}
 
 						{/* Content */}
 						<div className="flex flex-col gap-2">
 							<h3 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
-								{localizedHeading} {/* Use localized text */}
+									{heading}
 							</h3>
-							{localizedSubheading && ( // Use localized text
+							{subheading && (
 								<p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl">
-									{localizedSubheading}
+									{subheading}
 								</p>
 							)}
 						</div>
@@ -75,10 +64,6 @@ export default function CTASection({
 										button.icon && button.icon !== "none"
 											? IconMap[button.icon]
 											: null;
-									const localizedButtonLabel = getLocalizedValue(
-										button.i18n_label,
-										button.label,
-									); // Localize button label
 
 									return (
 										<Button
@@ -88,7 +73,7 @@ export default function CTASection({
 											asChild
 										>
 											<Link href={button.url}>
-												{localizedButtonLabel} {/* Use localized label */}
+												{button.label}
 												{Icon && <Icon className="w-4 h-4" />}
 											</Link>
 										</Button>
@@ -116,12 +101,12 @@ export default function CTASection({
 					className={`flex flex-col text-center gap-8 items-center ${containerStyles[variant]}`}
 				>
 					{/* Badge */}
-					{localizedBadgeText && ( // Use localized text
+					{badgeText && (
 						<div>
 							<Badge
 								variant={variant === "highlight" ? "secondary" : "default"}
 							>
-								{localizedBadgeText}
+								{badgeText}
 							</Badge>
 						</div>
 					)}
@@ -129,9 +114,9 @@ export default function CTASection({
 					{/* Content */}
 					<div className="flex flex-col gap-2">
 						<h3 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
-							{localizedHeading} {/* Use localized text */}
+							{heading}
 						</h3>
-						{localizedSubheading && ( // Use localized text
+						{subheading && (
 							<p
 								className={`text-lg leading-relaxed tracking-tight max-w-xl ${
 									variant === "highlight"
@@ -139,7 +124,7 @@ export default function CTASection({
 										: "text-muted-foreground"
 								}`}
 							>
-								{localizedSubheading}
+								{subheading}
 							</p>
 						)}
 					</div>
@@ -153,10 +138,6 @@ export default function CTASection({
 									button.icon && button.icon !== "none"
 										? IconMap[button.icon]
 										: null;
-								const localizedButtonLabel = getLocalizedValue(
-									button.i18n_label,
-									button.label,
-								); // Localize button label
 
 								// Adjust button variants for highlight background
 								let buttonVariant = button.variant || "default";
@@ -173,7 +154,7 @@ export default function CTASection({
 										asChild
 									>
 										<Link href={button.url}>
-											{localizedButtonLabel} {/* Use localized label */}
+											{button.label}
 											{Icon && <Icon className="w-4 h-4" />}
 										</Link>
 									</Button>

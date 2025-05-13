@@ -16,27 +16,6 @@ import {
 	Link as LinkIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useLanguage } from "@/lib/language-context";
-
-// Define translations for static text
-const staticText = {
-	share: {
-		en: "Share",
-		pt_BR: "Compartilhar",
-	},
-	copyLink: {
-		en: "Copy link",
-		pt_BR: "Copiar link",
-	},
-	email: {
-		en: "Email",
-		pt_BR: "E-mail",
-	},
-	linkCopied: {
-		en: "Link copied to clipboard",
-		pt_BR: "Link copiado para a área de transferência",
-	},
-};
 
 interface BlogShareButtonProps {
 	title: string;
@@ -44,15 +23,12 @@ interface BlogShareButtonProps {
 }
 
 export function BlogShareButton({ title, className }: BlogShareButtonProps) {
-	const { language } = useLanguage();
-
-	// Get localized text
-	const localizedShare = staticText.share[language] || staticText.share.en;
-	const localizedCopyLink =
-		staticText.copyLink[language] || staticText.copyLink.en;
-	const localizedEmail = staticText.email[language] || staticText.email.en;
-	const localizedLinkCopied =
-		staticText.linkCopied[language] || staticText.linkCopied.en;
+	const staticText = {
+		share: "Compartilhar",
+		copyLink: "Copiar link",
+		email: "E-mail",
+		linkCopied: "Link copiado para área de transferência",
+	};
 
 	const handleShare = async (platform: string) => {
 		const postUrl = window.location.href;
@@ -61,7 +37,7 @@ export function BlogShareButton({ title, className }: BlogShareButtonProps) {
 		switch (platform) {
 			case "copy":
 				await navigator.clipboard.writeText(postUrl);
-				toast.success(localizedLinkCopied);
+				toast.success(staticText.linkCopied);
 				break;
 			case "twitter":
 				window.open(
@@ -95,13 +71,13 @@ export function BlogShareButton({ title, className }: BlogShareButtonProps) {
 			<DropdownMenuTrigger asChild>
 				<Button size="sm" variant="outline" className={className}>
 					<Share2 className="h-4 w-4 mr-2" />
-					{localizedShare}
+					{staticText.share}
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
 				<DropdownMenuItem onClick={() => handleShare("copy")}>
 					<LinkIcon className="h-4 w-4 mr-2" />
-					{localizedCopyLink}
+					{staticText.copyLink}
 				</DropdownMenuItem>
 				<DropdownMenuItem onClick={() => handleShare("twitter")}>
 					<Twitter className="h-4 w-4 mr-2" />
@@ -117,7 +93,7 @@ export function BlogShareButton({ title, className }: BlogShareButtonProps) {
 				</DropdownMenuItem>
 				<DropdownMenuItem onClick={() => handleShare("email")}>
 					<Mail className="h-4 w-4 mr-2" />
-					{localizedEmail}
+					{staticText.email}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

@@ -1,4 +1,5 @@
 "use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,26 +28,13 @@ import type {
 	PortableTextImage as SanityPortableTextImage,
 } from "@/sanity/types/schema";
 import { BlogShareButton } from "./BlogShareButton";
-import { useLanguage } from "@/lib/language-context";
 
-// Define translations for static text
+// Static text
 const staticText = {
-	aboutTheAuthor: {
-		en: "About the author",
-		pt_BR: "Sobre o autor",
-	},
-	minRead: {
-		en: "min read",
-		pt_BR: "min de leitura",
-	},
-	noImage: {
-		en: "No image",
-		pt_BR: "Sem imagem",
-	},
-	unknownType: {
-		en: "Unknown type",
-		pt_BR: "Tipo desconhecido",
-	},
+	aboutTheAuthor: "Sobre o autor",
+	minRead: "min de leitura",
+	noImage: "Sem imagem",
+	unknownType: "Tipo desconhecido",
 };
 
 // Define the structure that represents post data after it's been fetched
@@ -71,9 +59,9 @@ interface CodeBlockValue {
 	language?: string;
 	filename?: string;
 	showLineNumbers?: boolean;
-	title?: string; // Added missing property
-	highlightLines?: string; // Added missing property
-	caption?: string; // Added missing property
+	title?: string;
+	highlightLines?: string;
+	caption?: string;
 }
 
 interface BlogPostPageProps {
@@ -91,18 +79,6 @@ const SocialIcons = {
 } as const;
 
 export default function BlogPostPage({ post }: BlogPostPageProps) {
-	const { language } = useLanguage();
-
-	// Get localized static text
-	const localizedAboutAuthor =
-		staticText.aboutTheAuthor[language] || staticText.aboutTheAuthor.en;
-	const localizedMinRead =
-		staticText.minRead[language] || staticText.minRead.en;
-	const localizedNoImage =
-		staticText.noImage[language] || staticText.noImage.en;
-	const localizedUnknownType =
-		staticText.unknownType[language] || staticText.unknownType.en;
-
 	// PortableText components for rendering blog content with improved styling
 	const components: PortableTextReactComponents = {
 		types: {
@@ -241,7 +217,7 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 		},
 		hardBreak: () => <br />, // Handle line breaks
 		unknownMark: ({ children }) => <>{children}</>, // Fallback for unknown marks
-		unknownType: () => <div>{localizedUnknownType}</div>, // Use localized text for unknown types
+		unknownType: () => <div>{staticText.unknownType}</div>,
 		unknownBlockStyle: ({ children }) => <div>{children}</div>, // Fallback for unknown block styles
 		unknownList: ({ children }) => <ul>{children}</ul>, // Fallback for unknown lists
 		unknownListItem: ({ children }) => <li>{children}</li>, // Fallback for unknown list items
@@ -296,7 +272,7 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 							</Link>
 							<div className="flex items-center text-sm text-muted-foreground">
 								<span>
-									{new Date(post.publishedAt).toLocaleDateString("en-US", {
+									{new Date(post.publishedAt).toLocaleDateString("pt-BR", {
 										year: "numeric",
 										month: "short",
 										day: "numeric",
@@ -316,8 +292,8 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 													})
 													.join(" ")
 													.split(/\s+/).length / 200,
-											)} ${localizedMinRead}`
-										: `3 ${localizedMinRead}`}
+											)} ${staticText.minRead}`
+										: `3 ${staticText.minRead}`}
 								</span>
 							</div>
 						</div>
@@ -342,7 +318,7 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 					</div>
 				) : (
 					<div className="w-full aspect-video mb-10 bg-muted rounded-lg flex items-center justify-center">
-						<span className="text-muted-foreground">{localizedNoImage}</span>
+						<span className="text-muted-foreground">{staticText.noImage}</span>
 					</div>
 				)}
 			</header>
@@ -359,7 +335,7 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 			{/* Author bio */}
 			{post.author.bio && (
 				<div className="mt-16 pt-8 border-t">
-					<h2 className="text-xl font-semibold mb-4">{localizedAboutAuthor}</h2>
+					<h2 className="text-xl font-semibold mb-4">{staticText.aboutTheAuthor}</h2>
 					<div className="p-6 bg-muted/30 rounded-lg">
 						<div className="flex flex-col md:flex-row gap-6">
 							<Avatar className="h-20 w-20">

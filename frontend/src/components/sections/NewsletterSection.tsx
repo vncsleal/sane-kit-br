@@ -7,7 +7,6 @@ import { MoveRight, Plus, Mail } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import type { SanityNewsletterSection } from "@/sanity/types/schema";
-import { useLanguage } from "@/lib/language-context"; // Import useLanguage
 
 // Map of icon names to components
 const IconMap = {
@@ -20,41 +19,18 @@ const IconMap = {
 export default function NewsletterSection({
 	variant = "default",
 	badgeText,
-	i18n_badgeText, // Add i18n prop
 	heading,
-	i18n_heading, // Add i18n prop
 	subheading,
-	i18n_subheading, // Add i18n prop
-	inputPlaceholder = "Enter your email",
-	i18n_inputPlaceholder, // Add i18n prop
-	buttonText = "Subscribe",
-	i18n_buttonText, // Add i18n prop
+	inputPlaceholder = "Digite seu e-mail",
+	buttonText = "Inscrever-se",
 	buttonIcon = "mail",
-	successMessage = "Thank you for subscribing!",
-	i18n_successMessage, // Add i18n prop
+	successMessage = "Obrigado por se inscrever!",
 	privacyText,
-	i18n_privacyText, // Add i18n prop
 }: SanityNewsletterSection) {
-	const { getLocalizedValue } = useLanguage(); // Use the hook
 	const [email, setEmail] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-
-	// Localize texts
-	const localizedBadgeText = getLocalizedValue(i18n_badgeText, badgeText);
-	const localizedHeading = getLocalizedValue(i18n_heading, heading);
-	const localizedSubheading = getLocalizedValue(i18n_subheading, subheading);
-	const localizedInputPlaceholder = getLocalizedValue(
-		i18n_inputPlaceholder,
-		inputPlaceholder,
-	);
-	const localizedButtonText = getLocalizedValue(i18n_buttonText, buttonText);
-	const localizedSuccessMessage = getLocalizedValue(
-		i18n_successMessage,
-		successMessage,
-	);
-	const localizedPrivacyText = getLocalizedValue(i18n_privacyText, privacyText);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -63,7 +39,7 @@ export default function NewsletterSection({
 
 		// Basic email validation
 		if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-			setError("Please enter a valid email address");
+			setError("Por favor, digite um endereço de e-mail válido");
 			setIsSubmitting(false);
 			return;
 		}
@@ -78,7 +54,7 @@ export default function NewsletterSection({
 			setSubmitted(true);
 			setEmail("");
 		} catch {
-			setError("Something went wrong. Please try again.");
+			setError("Algo deu errado. Por favor, tente novamente.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -99,10 +75,10 @@ export default function NewsletterSection({
 	const contentSection = (
 		<>
 			{/* Badge */}
-			{localizedBadgeText && ( // Use localized text
+				{badgeText && (
 				<div>
 					<Badge variant={variant === "highlight" ? "secondary" : "default"}>
-						{localizedBadgeText}
+						{badgeText}
 					</Badge>
 				</div>
 			)}
@@ -110,9 +86,9 @@ export default function NewsletterSection({
 			{/* Content */}
 			<div className="flex flex-col gap-2">
 				<h3 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
-					{localizedHeading} {/* Use localized text */}
+						{heading}
 				</h3>
-				{localizedSubheading && ( // Use localized text
+				{subheading && (
 					<p
 						className={`text-lg leading-relaxed tracking-tight max-w-xl ${
 							variant === "highlight"
@@ -120,7 +96,7 @@ export default function NewsletterSection({
 								: "text-muted-foreground"
 						}`}
 					>
-						{localizedSubheading}
+						{subheading}
 					</p>
 				)}
 			</div>
@@ -135,7 +111,7 @@ export default function NewsletterSection({
 						type="email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						placeholder={localizedInputPlaceholder} // Use localized text
+						placeholder={inputPlaceholder}
 						className={`flex-1 ${
 							variant === "highlight"
 								? "bg-primary-foreground border-primary-foreground/20 "
@@ -151,7 +127,7 @@ export default function NewsletterSection({
 						disabled={isSubmitting}
 						className="gap-2 whitespace-nowrap"
 					>
-						{localizedButtonText} {/* Use localized text */}
+						{buttonText}
 						{Icon && <Icon className="h-4 w-4" />}
 					</Button>
 				</form>
@@ -159,7 +135,7 @@ export default function NewsletterSection({
 				<div
 					className={`p-4 rounded-md ${variant === "highlight" ? "bg-secondary/60" : "bg-secondary/20"}`}
 				>
-					{localizedSuccessMessage} {/* Use localized text */}
+					{successMessage}
 				</div>
 			)}
 
@@ -167,11 +143,11 @@ export default function NewsletterSection({
 			{error && <div className="text-destructive text-sm">{error}</div>}
 
 			{/* Privacy text */}
-			{localizedPrivacyText && ( // Use localized text
+			{privacyText && (
 				<p
 					className={`text-sm ${variant === "highlight" ? "text-primary-foreground/70" : "text-muted-foreground"}`}
 				>
-					{localizedPrivacyText}
+					{privacyText}
 				</p>
 			)}
 		</>
