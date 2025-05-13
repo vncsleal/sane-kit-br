@@ -182,17 +182,26 @@ export const compareFeaturesSection = defineType({
                       validation: (rule) =>
                         rule.required().error("A referência à característica é obrigatória."),
                       options: {
-                        filter: ({ parent }) => {
-                          const existingRefs = (
-                            parent as {
-                              _key: string;
-                              featureRef?: { _ref: string };
-                            }[]
-                          )
-                            .filter((item) => item.featureRef?._ref)
-                            .map((item) => item.featureRef?._ref);
+                        filter: ({ document, parent }) => {
+                          if (!document || !Array.isArray(parent)) {
+                            return { filter: "" };
+                          }
+
+                          const existingRefs = parent
+                            .filter(item => {
+                              return item && typeof item === 'object' && 
+                                     'featureRef' in item && 
+                                     item.featureRef && 
+                                     typeof item.featureRef === 'object' && 
+                                     '_ref' in item.featureRef;
+                            })
+                            .map(item => {
+                              const typedItem = item as { featureRef: { _ref: string } };
+                              return typedItem.featureRef._ref;
+                            });
+
                           return {
-                            filter: "!(_id in $existingRefs)",
+                            filter: existingRefs.length > 0 ? "!(_id in $existingRefs)" : "",
                             params: { existingRefs },
                           };
                         },
@@ -343,7 +352,7 @@ export const compareFeaturesSection = defineType({
               type: "url",
               validation: (rule) =>
                 rule.required().error("A URL do botão é obrigatória.")
-                .uri({ allowRelative: false, scheme: ['http', 'https'] }).error("Forneça uma URL válida (http ou https)."),
+                .uri({ allowRelative: true, scheme: ['http', 'https'] }).error("Forneça uma URL válida (http ou https)."),
             }),
             defineField({
               name: "buttonIcon",

@@ -103,26 +103,12 @@ export const faqSection = defineType({
       description: "Para onde o botão leva (obrigatório se o texto do botão estiver preenchido)",
       hidden: ({ parent }: { parent: { buttonText?: string } }) => !parent?.buttonText,
       group: "content",
-      validation: (rule) =>
-        rule.custom((value, context: ValidationContext) => {
-          const parent = context.parent as { buttonText?: string };
-          if (parent?.buttonText && !value) {
-            return "A URL do botão é obrigatória se o texto do botão estiver preenchido.";
-          }
-          if (value && !parent?.buttonText) {
-            return "O texto do botão é obrigatório se a URL do botão estiver preenchida.";
-          }
-          if (value) {
-            try {
-              new URL(value.startsWith('//') ? `http:${value}` : value);
-            } catch (e) {
-              if (!value.startsWith('/') && !value.startsWith('#') && !value.startsWith('?') && !value.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/)) {
-                return "Forneça uma URL válida (ex: https://example.com), um link relativo (ex: /contato), ou uma âncora (ex: #id).";
-              }
-            }
-          }
-          return true;
-        }),
+      validation: (rule) => 
+            rule.required().error("A URL do botão é obrigatória")
+            .uri({
+				allowRelative: true,
+              scheme: ["http", "https", "mailto", "tel"]
+            }).error("Formato de URL inválido. Use http://, https://, mailto: ou tel:")
     }),
     defineField({
       name: "buttonIcon",
