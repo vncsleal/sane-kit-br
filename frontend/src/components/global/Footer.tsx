@@ -26,7 +26,7 @@ export default function Footer({
 	const logoAlt = logo?.alt || siteTitle;
 
 	// All rights reserved text
-	const allRightsReservedText = "All rights reserved.";
+	const allRightsReservedText = "Todos os direitos reservados.";
 
 	// Logo or site name component to reuse
 	const LogoOrSiteTitle = ({ className = "" }) => (
