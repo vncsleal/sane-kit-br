@@ -29,8 +29,9 @@ interface AuthorDetails extends SanityAuthor {
 	fullBio?: SanityAuthor["fullBio"];
 }
 
-interface ExpandedBlogPost extends Omit<SanityBlogPost, "categories"> {
+interface ExpandedBlogPost extends Omit<SanityBlogPost, "categories" | "author"> {
 	categories?: SanityCategory[];
+	author?: SanityAuthor;
 }
 
 interface AuthorPageUIProps {
@@ -51,7 +52,7 @@ const SocialIcons = {
 // Helper function to format date
 function formatDate(dateString?: string) {
 	if (!dateString) return "";
-	return new Date(dateString).toLocaleDateString("en-US", {
+	return new Date(dateString).toLocaleDateString("pt-BR", {
 		year: "numeric",
 		month: "short",
 		day: "numeric",
@@ -145,7 +146,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 
 					{/* Full Bio */}
 					{author.fullBio && (
-						<div className="prose mb-3 text-muted-foreground">
+						<div className="prose max-w-none dark:prose-invert mb-3">
 							<PortableText
 								value={author.fullBio}
 								components={portableTextComponents}
@@ -172,20 +173,20 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 						Artigos de {author.name}
 					</h2>
 
-					{posts.length === 0 ? (
+						{!posts || posts.length === 0 ? (
 						<p className="text-muted-foreground">Nenhum artigo encontrado.</p>
 					) : (
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 							{posts.map((post) => (
 								<Link
-									href={`/blog/${post.slug.current}`}
+									href={`/blog/${post.slug?.current}`}
 									key={post._id}
 									className="flex flex-col gap-4 group hover:opacity-80 transition-opacity"
 								>
 									<div className="bg-muted rounded-md aspect-video overflow-hidden">
 										{post.mainImage?.asset?._ref ? (
 											<Image
-												src={urlFor(post.mainImage.asset._ref).url()}
+												src={urlFor(post.mainImage).url()}
 												alt={post.mainImage?.alt || post.title || ""}
 												width={600}
 												height={337}

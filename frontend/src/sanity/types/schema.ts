@@ -424,11 +424,11 @@ export interface SanityBlogPost {
 	};
 	publishedAt: string;
 	excerpt?: string;
-	authors: SanityAsset[] & { _id?: string }[]; // Changed from author to authors (array)
+	authors: SanityAsset[] & { _id?: string }[];
 	mainImage?: SanityImage;
 	categories?: (SanityAsset & { _id?: string })[];
 	body?: PortableTextContent;
-	featured?: string; // Changed from boolean to string to match schema
+	featured?: string; 
 }
 
 export interface SanityBlogSection {

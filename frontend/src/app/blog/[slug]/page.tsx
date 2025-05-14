@@ -10,6 +10,7 @@ import type {
   PortableTextContent,
 } from "@/sanity/types/schema";
 
+// Make BlogPostData match the ExpandedBlogPost interface in BlogPostPage.tsx
 export interface BlogPostData {
   _id: string;
   _type: "blogPost";
@@ -21,7 +22,9 @@ export interface BlogPostData {
   excerpt?: string;
   mainImage?: SanityImage;
   body?: PortableTextContent;
-  featured?: boolean;
+  featured?: string | boolean;
+  // Changed to match ExpandedBlogPost
+  authors?: SanityAuthor[];
   author: SanityAuthor;
   categories?: SanityCategory[];
 }
@@ -36,6 +39,7 @@ async function getPage(slug: string): Promise<BlogPostData | null> {
     `
     *[_type == "blogPost" && slug.current == $slug][0]{
       _id,
+      _type,
       title,
       slug,
       publishedAt,
@@ -43,7 +47,22 @@ async function getPage(slug: string): Promise<BlogPostData | null> {
       mainImage,
       body,
       featured,
-      "author": author->{
+      "authors": authors[]->{
+        _id,
+        name,
+        slug,
+        avatar,
+        bio,
+        email,
+        role,
+        socialLinks[] {
+          _key,
+          platform,
+          url,
+          username
+        }
+      },
+      "author": authors[0]->{
         _id,
         name,
         slug,

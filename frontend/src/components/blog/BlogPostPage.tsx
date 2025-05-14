@@ -22,9 +22,10 @@ import {
 	Mail,
 } from "lucide-react";
 import type {
-	SanityBlogPost,
+	PortableTextContent,
 	SanityAuthor,
 	SanityCategory,
+	SanityImage,
 	PortableTextImage as SanityPortableTextImage,
 } from "@/sanity/types/schema";
 import { BlogShareButton } from "./BlogShareButton";
@@ -38,9 +39,20 @@ const staticText = {
 };
 
 // Define the structure that represents post data after it's been fetched
-// and references have been expanded
-interface ExpandedBlogPost
-	extends Omit<SanityBlogPost, "author" | "categories"> {
+// and references have been expanded - modified to match BlogPostData
+interface ExpandedBlogPost {
+	_id: string;
+	_type: "blogPost";
+	title: string;
+	slug: {
+		current: string;
+	};
+	publishedAt: string;
+	excerpt?: string;
+	mainImage?: SanityImage;
+	body?: PortableTextContent;
+	featured?: string | boolean;
+	authors?: SanityAuthor[];
 	author: SanityAuthor;
 	categories?: SanityCategory[];
 }

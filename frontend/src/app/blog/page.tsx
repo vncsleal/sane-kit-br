@@ -35,6 +35,12 @@ export interface PaginationData {
   totalPosts: number;
 }
 
+// Define PageProps to match other pages in the project
+interface PageProps {
+  params: Promise<{slug: string}>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
 // Generate metadata based on config
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getBlogPageConfig();
@@ -130,13 +136,12 @@ async function getBlogPosts(
   };
 }
 
-export default async function BlogIndexPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default async function BlogIndexPage({ searchParams }: PageProps) {
+  // Resolve the searchParams promise
+  const resolvedSearchParams = await searchParams;
+  
   // Get the current page from query params or default to 1
-  const pageParam = searchParams.page;
+  const pageParam = resolvedSearchParams.page;
   const currentPage = typeof pageParam === 'string' ? parseInt(pageParam) : 1;
   
   const config = await getBlogPageConfig();

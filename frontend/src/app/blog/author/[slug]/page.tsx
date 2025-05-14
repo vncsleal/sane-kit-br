@@ -59,17 +59,23 @@ async function getAuthor(slug: string): Promise<SanityAuthor | null> {
   );
 }
 
-// Fetch recent posts by author
+// Fetch recent posts by author - Updated query to use authors[]->_ref
 async function getAuthorPosts(authorId: string): Promise<ExpandedBlogPost[]> {
   return client.fetch(
     `
-    *[_type == "blogPost" && author._ref == $authorId] | order(publishedAt desc)[0...6]{
+    *[_type == "blogPost" && $authorId in authors[]._ref] | order(publishedAt desc)[0...6]{
       _id,
       title,
       slug,
       publishedAt,
       excerpt,
       mainImage,
+      "author": authors[0]->{
+        _id,
+        name,
+        slug,
+        avatar
+      },
       "categories": categories[]->{
         _id,
         title,
