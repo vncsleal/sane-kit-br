@@ -2,7 +2,6 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "./schemaTypes";
-import { internationalizedArray } from "sanity-plugin-internationalized-array";
 import { codeInput } from "@sanity/code-input";
 import { unsplashImageAsset } from "sanity-plugin-asset-source-unsplash";
 import Logo from "./components/Logo";
@@ -22,14 +21,6 @@ export default defineConfig({
 		visionTool(),
 		codeInput(),
 		unsplashImageAsset(),
-		internationalizedArray({
-			languages: [
-				{ id: "en", title: "English" },
-				{ id: "pt_BR", title: "Brazilian Portuguese" },
-			],
-			defaultLanguages: ["en"],
-			fieldTypes: ["string", "text"],
-		}),
 		ptBRLocale(),
 	],
 	schema: {

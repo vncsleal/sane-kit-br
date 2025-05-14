@@ -7,7 +7,6 @@ import { client } from "@/sanity/client";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/global/ThemeProvider";
 import { ThemeToggle } from "@/components/global/ThemeToggle";
-import { LanguageProvider, type Language } from "@/lib/language-context";
 import type { SanityFooter, SanityHeader } from "@/sanity/types/schema";
 // Import the PostHogProvider
 import { PostHogProvider } from "@/components/PostHogProvider";
@@ -42,9 +41,6 @@ async function getGlobals(): Promise<{
 	return { header, footer };
 }
 
-function getDefaultLanguage(): Language {
-	return "en";
-}
 
 export default async function RootLayout({
 	children,
@@ -52,11 +48,9 @@ export default async function RootLayout({
 	children: React.ReactNode;
 }) {
 	const { header, footer } = await getGlobals();
-	const initialLang = getDefaultLanguage();
-	const htmlLang = initialLang === "pt_BR" ? "pt-BR" : "en";
 
 	return (
-		<html lang={htmlLang} suppressHydrationWarning>
+		<html suppressHydrationWarning>
 			<head>
 				{/* Google Analytics */}
 				<GoogleAnalytics />
@@ -71,7 +65,6 @@ export default async function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
-						<LanguageProvider defaultLanguage={initialLang}>
 							{header && <Header {...header} />}
 							<div className="mt-20 px-4 md:px-2">{children}</div>
 							{footer && <Footer {...footer} />}
@@ -80,7 +73,6 @@ export default async function RootLayout({
 							</div>
 							<Toaster position="top-center" />
 							<CookieConsent />
-						</LanguageProvider>
 					</ThemeProvider>
 				</PostHogProvider>
 			</body>
