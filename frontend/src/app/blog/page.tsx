@@ -6,6 +6,7 @@ import type {
   SanityImage,
 } from "@/sanity/types/schema";
 import BlogIndexPageUI from "@/components/blog/BlogIndexPageUI";
+import { groq } from "next-sanity";
 
 // Use SanityBlogPage type
 type BlogPageConfig = SanityBlogPage;
@@ -27,6 +28,13 @@ export interface BlogPostListItem {
   categories?: SanityCategory[];
 }
 
+// Define pagination metadata
+export interface PaginationData {
+  currentPage: number;
+  totalPages: number;
+  totalPosts: number;
+}
+
 // Generate metadata based on config
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getBlogPageConfig();
@@ -37,20 +45,27 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// Define the queries
+const BLOG_PAGE_QUERY = groq`*[_type == "blogPage"][0]{
+  title,
+  description,
+  layout,
+  postsPerPage,
+  featuredPostsCount,
+  showOnlyFeaturedPosts,
+  "seo": {
+    "metaTitle": seo.metaTitle,
+    "metaDescription": seo.metaDescription
+  }
+}`;
+
+const COUNT_POSTS_QUERY = groq`count(*[_type == "blogPost"])`;
+
+const COUNT_FEATURED_POSTS_QUERY = groq`count(*[_type == "blogPost" && featured == "true"])`;
+
 // Fetch blog page configuration without i18n fields
 async function getBlogPageConfig(): Promise<BlogPageConfig> {
-  const config = await client.fetch(`*[_type == "blogPage"][0]{
-    title,
-    description,
-    layout,
-    postsPerPage,
-    featuredPostsCount,
-    showOnlyFeaturedPosts,
-    "seo": {
-      "metaTitle": seo.metaTitle,
-      "metaDescription": seo.metaDescription
-    }
-  }`);
+  const config = await client.fetch(BLOG_PAGE_QUERY);
 
   return (
     config || {
@@ -62,13 +77,29 @@ async function getBlogPageConfig(): Promise<BlogPageConfig> {
   );
 }
 
-// Fetch blog posts without i18n fields, fixed to use authors array
+// Fetch blog posts with pagination support
 async function getBlogPosts(
   config: BlogPageConfig,
-): Promise<BlogPostListItem[]> {
+  page: number = 1
+): Promise<{ posts: BlogPostListItem[]; pagination: PaginationData }> {
   const postsPerPage = config.postsPerPage || 9; // Default posts per page
-  return client.fetch(`
-    *[_type == "blogPost"] | order(publishedAt desc)[0...${postsPerPage}]{
+  const start = (page - 1) * postsPerPage;
+  const end = start + postsPerPage;
+  
+  // Determine if we should only show featured posts
+  const showOnlyFeatured = config.showOnlyFeaturedPosts === "true";
+  
+  // Count total posts
+  const totalPosts = await client.fetch(
+    showOnlyFeatured ? COUNT_FEATURED_POSTS_QUERY : COUNT_POSTS_QUERY
+  );
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+  
+  // Fetch posts for the current page
+  const posts = await client.fetch(
+    `*[_type == "blogPost"${showOnlyFeatured ? ' && featured == "true"' : ''}] | order(publishedAt desc)[${start}...${end}]{
       _id,
       title,
       slug,
@@ -86,14 +117,31 @@ async function getBlogPosts(
         title,
         slug
       }
+    }`
+  );
+
+  return {
+    posts,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalPosts,
     }
-  `);
+  };
 }
 
-export default async function BlogIndexPage() {
+export default async function BlogIndexPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  // Get the current page from query params or default to 1
+  const pageParam = searchParams.page;
+  const currentPage = typeof pageParam === 'string' ? parseInt(pageParam) : 1;
+  
   const config = await getBlogPageConfig();
-  const posts = await getBlogPosts(config);
+  const { posts, pagination } = await getBlogPosts(config, currentPage);
 
   // Pass fetched data to the client component
-  return <BlogIndexPageUI config={config} posts={posts} />;
+  return <BlogIndexPageUI config={config} posts={posts} pagination={pagination} />;
 }
