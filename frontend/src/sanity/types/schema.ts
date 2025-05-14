@@ -424,11 +424,11 @@ export interface SanityBlogPost {
 	};
 	publishedAt: string;
 	excerpt?: string;
-	author: SanityAsset & { _id?: string };
+	authors: SanityAsset[] & { _id?: string }[]; // Changed from author to authors (array)
 	mainImage?: SanityImage;
 	categories?: (SanityAsset & { _id?: string })[];
 	body?: PortableTextContent;
-	featured?: boolean;
+	featured?: string; // Changed from boolean to string to match schema
 }
 
 export interface SanityBlogSection {
@@ -437,10 +437,10 @@ export interface SanityBlogSection {
 	heading: string;
 	subheading?: string;
 	postsToShow?: number;
-	showFeaturedPostLarge?: boolean;
-	featuredPostsOnly?: boolean;
+	showFeaturedPostLarge?: string;
+	featuredPostsOnly?: string;    
 	variant?: "default" | "grid";
-	viewAllButton?: boolean;
+	viewAllButton?: string;        
 	viewAllUrl?: string;
 	viewAllButtonText?: string;
 }
@@ -523,7 +523,7 @@ export interface SanityBlogPage {
 	layout?: "grid" | "featured" | "compact";
 	postsPerPage?: number;
 	featuredPostsCount?: number;
-	showOnlyFeaturedPosts?: boolean;
+	showOnlyFeaturedPosts?: string; // Changed to string to match schema
 	seo?: {
 		metaTitle?: string;
 		metaDescription?: string;

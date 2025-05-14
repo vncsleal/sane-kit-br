@@ -18,7 +18,7 @@ export interface BlogPostListItem {
   publishedAt?: string;
   excerpt?: string;
   mainImage?: SanityImage;
-  featured?: boolean;
+  featured?: string; // Changed from boolean to string to match schema
   author?: {
     _id: string;
     name: string;
@@ -62,7 +62,7 @@ async function getBlogPageConfig(): Promise<BlogPageConfig> {
   );
 }
 
-// Fetch blog posts without i18n fields
+// Fetch blog posts without i18n fields, fixed to use authors array
 async function getBlogPosts(
   config: BlogPageConfig,
 ): Promise<BlogPostListItem[]> {
@@ -76,7 +76,7 @@ async function getBlogPosts(
       excerpt,
       mainImage,
       featured,
-      "author": author->{
+      "author": authors[0]->{
         _id,
         name,
         avatar

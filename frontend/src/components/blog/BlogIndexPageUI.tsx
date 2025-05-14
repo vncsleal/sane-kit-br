@@ -44,9 +44,10 @@ export default function BlogIndexPageUI({
 
 	if (config.layout === "featured") {
 		const count = config.featuredPostsCount || 3;
-		if (config.showOnlyFeaturedPosts) {
-			featuredPosts = posts.filter((post) => post.featured).slice(0, count);
-			regularPosts = posts.filter((post) => !post.featured);
+		if (config.showOnlyFeaturedPosts === "true") {
+			// Filter posts where featured is "true" (string value from schema)
+			featuredPosts = posts.filter(post => post.featured === "true").slice(0, count);
+			regularPosts = posts.filter(post => post.featured !== "true");
 		} else {
 			featuredPosts = posts.slice(0, count);
 			regularPosts = posts.slice(count);
@@ -102,7 +103,7 @@ export default function BlogIndexPageUI({
 												{post.categories?.[0] && (
 													<Badge>{post.categories[0].title}</Badge>
 												)}
-												{post.author?.name && (
+												{post.author && (
 													<p className="flex flex-row gap-2 text-sm items-center">
 														<span className="text-muted-foreground">Por</span>{" "}
 														<Avatar className="h-6 w-6">
@@ -139,7 +140,7 @@ export default function BlogIndexPageUI({
 												)}
 											</div>
 										</Link>
-									);
+									 );
 								 })()}
 
 							{/* Secondary Featured Posts */}
@@ -171,7 +172,7 @@ export default function BlogIndexPageUI({
 										{post.categories?.[0] && (
 											<Badge>{post.categories[0].title}</Badge>
 										)}
-										{post.author?.name && (
+										{post.author && (
 											<p className="flex flex-row gap-2 text-sm items-center">
 												<span className="text-muted-foreground">Por</span>{" "}
 												<Avatar className="h-6 w-6">
@@ -321,22 +322,24 @@ export default function BlogIndexPageUI({
 								</p>
 							)}
 
+							{post.author && (
 							<div className="flex items-center gap-2 mt-auto">
 								<Avatar className="h-8 w-8">
-									{post.author?.avatar?.asset?._ref ? (
+									{post.author.avatar?.asset?._ref ? (
 										<AvatarImage
 											src={urlFor(post.author.avatar.asset._ref).url()}
-											alt={post.author?.avatar?.alt || post.author?.name || ""}
+											alt={post.author.avatar?.alt || post.author.name || ""}
 										/>
 									) : null}
 									<AvatarFallback>
-										{getInitials(post.author?.name || "")}
+										{getInitials(post.author.name)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
-									{post.author?.name || "Unknown author"}
+									{post.author.name}
 								</span>
 							</div>
+							)}
 						</Link>
 					))}
 				</div>

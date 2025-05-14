@@ -50,10 +50,10 @@ export default function BlogSection(props: SanityBlogSection) {
 		heading = "Artigos mais recentes", // Default value
 		subheading,
 		postsToShow = 3,
-		showFeaturedPostLarge = true,
-		featuredPostsOnly = false,
+		showFeaturedPostLarge = "true", 
+		featuredPostsOnly = "false", 
 		variant = "default",
-		viewAllButton = false,
+		viewAllButton = "false", 
 		viewAllUrl = "/blog",
 		viewAllButtonText = "Ver todos", // Default value
 	} = props;
@@ -67,8 +67,10 @@ export default function BlogSection(props: SanityBlogSection) {
 			setIsLoading(true);
 			setError(null);
 			let query = `*[_type == "blogPost"] | order(publishedAt desc, _updatedAt desc)`;
-			if (featuredPostsOnly) {
-				query = `*[_type == "blogPost" && featured == true] | order(publishedAt desc, _updatedAt desc)`;
+			
+			// Use proper query matching how featured field is stored in schema
+			if (featuredPostsOnly === "true") {
+				query = `*[_type == "blogPost" && featured == "true"] | order(publishedAt desc, _updatedAt desc)`;
 			}
 
 			try {
@@ -83,7 +85,7 @@ export default function BlogSection(props: SanityBlogSection) {
                             ...
                         },
                         featured,
-                        "author": author->{
+                        "author": authors[0]->{
                             _id,
                             name,
                             slug,
@@ -103,7 +105,7 @@ export default function BlogSection(props: SanityBlogSection) {
 				setPosts(fetchedPosts);
 			} catch (err) {
 				console.error("Error fetching blog posts:", err);
-				setError("Failed to load posts.");
+				setError("Falha ao carregar posts.");
 				setPosts([]); // Ensure posts is empty on error
 			} finally {
 				setIsLoading(false);
@@ -114,16 +116,18 @@ export default function BlogSection(props: SanityBlogSection) {
 	}, [postsToShow, featuredPostsOnly]); // Re-fetch if these props change
 
 	const hasPosts = !isLoading && !error && posts.length > 0;
+	
+	
 	const featuredPost =
-		variant === "default" && showFeaturedPostLarge && hasPosts
+		variant === "default" && showFeaturedPostLarge === "true" && hasPosts
 			? posts[0]
 			: null;
 	const regularPosts =
-		variant === "default" && showFeaturedPostLarge && hasPosts
+		variant === "default" && showFeaturedPostLarge === "true" && hasPosts
 			? posts.slice(1)
 			: posts;
 
-	// --- Render Logic (similar to BlogSectionUI but integrated here) ---
+	// --- Render Logic ---
 
 	if (isLoading) {
 		// Optional: Render a loading state
@@ -156,7 +160,7 @@ export default function BlogSection(props: SanityBlogSection) {
 						<h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
 							{heading}
 						</h2>
-						{viewAllButton && (
+						{viewAllButton === "true" && (
 							<Button className="gap-4" asChild>
 								<Link
 									href={
@@ -227,7 +231,7 @@ export default function BlogSection(props: SanityBlogSection) {
 						)}
 					</div>
 					{/* View All Button */}
-					{viewAllButton && (
+					{viewAllButton === "true" && (
 						<Button className="gap-4" asChild>
 							<Link
 								href={
