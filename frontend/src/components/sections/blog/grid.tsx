@@ -31,9 +31,9 @@ export default function Grid({
           title,
           slug,
           excerpt,
-          featuredImage,
+          mainImage,
           publishedAt,
-          "author": author->{
+          "author": authors[0]->{
             _id,
             name,
             slug,
@@ -49,6 +49,7 @@ export default function Grid({
 
         // Fetch data
         const result = await client.fetch(query);
+        console.log("Fetched blog posts:", result);
         setPosts(result || []);
       } catch (error) {
         console.error("Error fetching blog posts:", error);

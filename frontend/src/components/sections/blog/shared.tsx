@@ -102,13 +102,13 @@ export const BlogPostCard = ({
               isFeatured ? "aspect-[16/9]" : "aspect-[16/10]"
             } bg-muted mb-5`}
           >
-            {post.mainImage?.asset?._ref ? (
+            {post.mainImage ? (
               <Image
-                src={urlFor(post.mainImage.asset._ref)
+                src={urlFor(post.mainImage)
                   .width(isFeatured ? 900 : 600)
                   .height(isFeatured ? 600 : 400)
                   .url()}
-                alt={post.title || ""}
+                alt={post.mainImage.alt || post.title || ""}
                 className="object-cover transition-all hover:scale-105"
                 fill={true}
                 sizes={isFeatured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
