@@ -26,10 +26,6 @@ export interface BlogPostWithData {
   featured?: "true" | "false";
   author: Author;
   categories?: Category[];
-  featuredImage?: {
-    _ref: string;
-    _type: "reference";
-  };
 }
 
 // Utility functions 
@@ -56,11 +52,17 @@ export const SectionHeader = ({
   heading = "Artigos mais recentes", 
   subheading 
 }: Pick<BlogSection, 'heading' | 'subheading'>) => (
-  <div className="max-w-screen-md">
-    <h2 className="text-3xl md:text-5xl tracking-tighter mb-4">{heading}</h2>
-    {subheading && (
-      <p className="text-xl text-muted-foreground mb-10">{subheading}</p>
-    )}
+  <div className="flex w-full flex-col sm:flex-row sm:justify-between sm:items-center gap-8">
+    <div className="flex flex-col gap-2">
+      <h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
+        {heading}
+      </h2>
+      {subheading && (
+        <p className="text-lg text-muted-foreground max-w-md">
+          {subheading}
+        </p>
+      )}
+    </div>
   </div>
 );
 
@@ -73,14 +75,12 @@ export const ViewAllButton = ({
   if (viewAllButton !== "true") return null;
   
   return (
-    <div className="mt-10 flex justify-center">
-      <Button variant="outline" size="lg" asChild>
-        <Link href={viewAllUrl || "/blog"} className="gap-2 items-center">
-          {viewAllButtonText}
-          <MoveRight className="w-4 h-4" />
-        </Link>
-      </Button>
-    </div>
+    <Button className="gap-4" asChild>
+      <Link href={viewAllUrl.startsWith("/") ? viewAllUrl : `/${viewAllUrl}`}>
+        {viewAllButtonText}
+        <MoveRight className="w-4 h-4" />
+      </Link>
+    </Button>
   );
 };
 
@@ -93,94 +93,64 @@ export const BlogPostCard = ({
   isFeatured?: boolean;
 }) => {
   return (
-    <div className={`flex flex-col ${isFeatured ? "lg:flex-row gap-10" : ""}`}>
-      {/* Featured image */}
-      <div className={`relative ${isFeatured ? "lg:w-1/2" : ""}`}>
-        <Link href={`/blog/${post.slug?.current || ""}`}>
-          <div
-            className={`relative overflow-hidden rounded-lg ${
-              isFeatured ? "aspect-[16/9]" : "aspect-[16/10]"
-            } bg-muted mb-5`}
-          >
-            {post.mainImage ? (
-              <Image
-                src={urlFor(post.mainImage)
-                  .width(isFeatured ? 900 : 600)
-                  .height(isFeatured ? 600 : 400)
-                  .url()}
-                alt={post.mainImage.alt || post.title || ""}
-                className="object-cover transition-all hover:scale-105"
-                fill={true}
-                sizes={isFeatured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                <span className="text-muted-foreground">No image</span>
-              </div>
-            )}
-          </div>
-        </Link>
+    <Link
+      href={`/blog/${post.slug?.current || ""}`}
+      className={`flex flex-col gap-4 hover:opacity-75 transition-opacity ${
+        isFeatured ? "md:col-span-2" : ""
+      }`}
+    >
+      <div className="bg-muted rounded-md aspect-video overflow-hidden">
+        {post.mainImage?.asset?._ref ? (
+          <Image
+            src={urlFor(post.mainImage).url()}
+            alt={post.mainImage.alt || ""}
+            width={isFeatured ? 1200 : 600}
+            height={isFeatured ? 675 : 337}
+            className="w-full h-full object-cover"
+          />
+        ) : null}
       </div>
-
-      {/* Content */}
-      <div className={isFeatured ? "lg:w-1/2" : ""}>
-        {/* Categories */}
-        {post.categories && post.categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {post.categories.map((category) => (
-              <Badge key={category._id} variant="outline">
-                <Link href={`/blog/category/${category.slug?.current || ""}`}>
-                  {category.title || ""}
-                </Link>
-              </Badge>
-            ))}
-          </div>
+      
+      <div className="flex flex-row gap-4 items-center flex-wrap">
+        {post.categories?.length ? (
+          <Badge>
+            {post.categories[0].title || ""}
+          </Badge>
+        ) : null}
+        
+        <p className="flex flex-row gap-2 text-sm items-center">
+          <span className="text-muted-foreground">Por</span>{" "}
+          <Avatar className="h-6 w-6">
+            {post.author.avatar?.asset?._ref ? (
+              <AvatarImage
+                src={urlFor(post.author.avatar).url()}
+                alt={post.author.name || ""}
+              />
+            ) : null}
+            <AvatarFallback>
+              {getInitials(post.author.name || "")}
+            </AvatarFallback>
+          </Avatar>
+          <span>{post.author.name || ""}</span>
+        </p>
+        
+        {post.publishedAt && (
+          <span className="text-sm text-muted-foreground">
+            {formatDate(post.publishedAt)}
+          </span>
         )}
-
-        {/* Title */}
-        <Link href={`/blog/${post.slug?.current || ""}`}>
-          <h3
-            className={`font-medium ${
-              isFeatured
-                ? "text-3xl md:text-4xl mb-4"
-                : "text-xl md:text-2xl mb-2"
-            } hover:text-primary transition-colors`}
-          >
-            {post.title || ""}
-          </h3>
-        </Link>
-
-        {/* Excerpt */}
+      </div>
+      
+      <div className="flex flex-col gap-2">
+        <h3 className={`max-w-3xl ${isFeatured ? "text-4xl" : "text-2xl"} tracking-tight`}>
+          {post.title || ""}
+        </h3>
         {post.excerpt && (
-          <p
-            className={`text-muted-foreground line-clamp-3 ${
-              isFeatured ? "text-lg mb-6" : "mb-4"
-            }`}
-          >
+          <p className="max-w-3xl text-muted-foreground text-base">
             {post.excerpt}
           </p>
         )}
-
-        {/* Author and date */}
-        <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            {post.author?.avatar ? (
-              <AvatarImage
-                src={urlFor(post.author.avatar).width(80).height(80).url()}
-              />
-            ) : null}
-            <AvatarFallback>{post.author?.name ? getInitials(post.author.name) : 'NA'}</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col text-sm">
-            <span className="text-foreground font-medium">
-              {post.author?.name || 'Anonymous'}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {post.publishedAt && formatDate(post.publishedAt)}
-            </span>
-          </div>
-        </div>
       </div>
-    </div>
+    </Link>
   );
 };
