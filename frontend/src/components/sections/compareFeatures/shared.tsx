@@ -2,7 +2,8 @@
 
 import { Check, Minus, MoveRight, PhoneCall, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, type buttonVariants } from "@/components/ui/button";
+import type { VariantProps } from "class-variance-authority";
 import Link from "next/link";
 import type { CompareFeaturesSection } from "@/sanity/types";
 
@@ -43,14 +44,14 @@ export const FeatureValueCell = ({
   customText?: string 
 }) => {
   if (value === "custom" && customText) {
-    return <span className="text-sm">{customText}</span>;
+    return <p className="text-muted-foreground text-sm">{customText}</p>;
   }
 
   if (value === "true") {
-    return <Check className="mx-auto h-4 w-4 text-primary" />;
+    return <Check className="w-4 h-4 text-primary" />;
   }
   
-  return <Minus className="mx-auto h-4 w-4 text-muted-foreground" />;
+  return <Minus className="w-4 h-4 text-muted-foreground" />;
 };
 
 // Plan button component
@@ -58,26 +59,34 @@ export const PlanButton = ({
   buttonText, 
   buttonUrl = "#", 
   buttonVariant = "default", 
-  buttonIcon 
+  buttonIcon,
+  highlighted = false
 }: { 
   buttonText?: string; 
   buttonUrl?: string; 
   buttonVariant?: "default" | "secondary" | "outline" | "ghost" | "link"; 
-  buttonIcon?: "arrowRight" | "phone" | "plus"; 
+  buttonIcon?: "arrowRight" | "phone" | "plus";
+  highlighted?: boolean;
 }) => {
   if (!buttonText) return null;
   
-  const Icon = buttonIcon ? IconMap[buttonIcon] : null;
-  
   return (
     <Button 
-      variant={buttonVariant} 
-      className={Icon ? "w-full gap-2" : "w-full"}
+      variant={
+        (buttonVariant as VariantProps<typeof buttonVariants>["variant"]) || 
+        (highlighted ? "default" : "outline")
+      }
+      className="gap-4 mt-8"
       asChild
     >
       <Link href={buttonUrl}>
-        {buttonText}
-        {Icon && <Icon className="h-4 w-4" />}
+        {buttonText}{" "}
+        {buttonIcon && 
+          (() => {
+            const Icon = IconMap[buttonIcon];
+            return Icon ? <Icon className="w-4 h-4" /> : null;
+          })()
+        }
       </Link>
     </Button>
   );

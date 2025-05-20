@@ -5,7 +5,7 @@ import RenderSection from "@/components/sections/RenderSection";
 import { urlFor } from "@/sanity/client";
 import type { Metadata } from "next";
 
-// Simplified query without i18n fields
+// Enhanced GROQ query with better feature reference handling
 const pageQuery = `*[_type == "page" && slug.current == $slug][0]{
   _id,
   title,
@@ -15,23 +15,18 @@ const pageQuery = `*[_type == "page" && slug.current == $slug][0]{
     ...,
     _type == "compareFeaturesSection" => {
       ...,
-      "features": features[]->{
-        _id,
-        _key,
-        _type,
-        title,
-        description
+      "features": features[]{
+        "_ref": _ref,
+        "_key": _key,
+        "_type": _type
       },
       "plans": plans[]{
         ...,
         "featureValues": featureValues[]{
           ...,
-          "featureRef": featureRef->{
-            _id,
-            _type,
-            _key,
-            title,
-            description
+          "featureRef": {
+            "_ref": featureRef._ref,
+            "_type": featureRef._type
           }
         }
       }
@@ -45,7 +40,8 @@ interface PageProps {
 }
 
 async function getPage(slug: string): Promise<Page | null> {
-  return client.fetch(pageQuery, { slug });
+  const page = await client.fetch(pageQuery, { slug });
+  return page;
 }
 
 // Generate metadata using direct values
