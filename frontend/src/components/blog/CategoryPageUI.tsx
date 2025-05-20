@@ -71,9 +71,9 @@ export default function CategoryPageUI({
 }: CategoryPageUIProps) {
 	// Static text in English
 	const staticText = {
-		noArticlesFound: "No articles found in this category.",
-		viewAllBlogPosts: "View all blog posts",
-		noImage: "No image",
+		noArticlesFound: "Nenhum artigo encontrado nesta categoria",
+		viewAllBlogPosts: "Ver todos os posts",
+		noImage: "Sem imagem",
 	};
 
 	return (
