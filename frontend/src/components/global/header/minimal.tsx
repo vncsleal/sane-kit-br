@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MoveRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { HeaderLogo, createHeaderClassName, HeaderProps } from "./shared";
+import { HeaderLogo, createHeaderClassName, HeaderProps, ensureAbsoluteUrl } from "./shared";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 
@@ -53,7 +53,7 @@ export default function Minimal({
                   <div key={item._key} className="flex flex-col gap-2">
                     {item.href ? (
                       <Link
-                        href={item.href}
+                        href={ensureAbsoluteUrl(item.href)}
                         className="text-lg font-medium hover:text-primary flex justify-between items-center"
                       >
                         <span>
@@ -76,7 +76,7 @@ export default function Minimal({
                     {item.items?.map((subItem) => (
                       <Link
                         key={subItem._key}
-                        href={subItem.href || '#'}
+                        href={ensureAbsoluteUrl(subItem.href)}
                         className="ml-3 flex justify-between items-center py-1 text-muted-foreground hover:text-foreground"
                       >
                         <span>
@@ -95,7 +95,7 @@ export default function Minimal({
                       asChild
                       className="w-full"
                     >
-                      <Link href={button.url || '#'} >
+                      <Link href={ensureAbsoluteUrl(button.url)} >
                         {button.label}
                       </Link>
                     </Button>

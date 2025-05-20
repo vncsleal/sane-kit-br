@@ -17,6 +17,15 @@ export interface HeaderButtonProps {
   _key?: string;
 }
 
+// Helper function to ensure URLs are absolute
+export function ensureAbsoluteUrl(url: string | undefined): string {
+  if (!url) return "#";
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("#") || url.startsWith("/")) {
+    return url;
+  }
+  return `/${url}`;
+}
+
 export function HeaderLogo({
   logo,
   title,
@@ -58,7 +67,7 @@ export function HeaderCTAButton({ label, url, variant = "default" }: HeaderButto
       size="sm"
       className="rounded-full"
     >
-      <Link href={url || "#"}>
+      <Link href={ensureAbsoluteUrl(url)}>
         {label}
         <MoveRight className="ml-2 h-4 w-4" />
       </Link>

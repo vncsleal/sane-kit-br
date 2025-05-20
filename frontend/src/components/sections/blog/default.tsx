@@ -49,7 +49,6 @@ export default function Default({
 
         // Fetch data
         const result = await client.fetch(query);
-        console.log("Fetched blog posts:", result);
         setPosts(result || []);
       } catch (error) {
         console.error("Error fetching blog posts:", error);
