@@ -3,12 +3,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import BlogPostComponent from "@/components/blog/BlogPostPage";
 import { ScrollToTopButton } from "@/components/blog/ScrollToTopButton";
-import type {
-  SanityAuthor,
-  SanityCategory,
-  SanityImage,
-  PortableTextContent,
-} from "@/sanity/types/schema";
+import { Author,Category,PortableText, SanityImageHotspot, SanityImageCrop } from "@/sanity/types";
+
 
 // Make BlogPostData match the ExpandedBlogPost interface in BlogPostPage.tsx
 export interface BlogPostData {
@@ -20,13 +16,19 @@ export interface BlogPostData {
   };
   publishedAt: string;
   excerpt?: string;
-  mainImage?: SanityImage;
-  body?: PortableTextContent;
+  mainImage?: {
+      asset?: { _ref: string; _type: string};
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      caption?: string;
+      _type: string;
+    };
+  body?: PortableText;
   featured?: string | boolean;
-  // Changed to match ExpandedBlogPost
-  authors?: SanityAuthor[];
-  author: SanityAuthor;
-  categories?: SanityCategory[];
+  authors?: Author[];
+  author: Author;
+  categories?: Category[];
 }
 
 // Update PageProps to use Promise for params

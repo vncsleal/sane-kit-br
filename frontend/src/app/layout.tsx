@@ -7,7 +7,7 @@ import { client } from "@/sanity/client";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/global/ThemeProvider";
 import { ThemeToggle } from "@/components/global/ThemeToggle";
-import type { SanityFooter, SanityHeader } from "@/sanity/types/schema";
+import type { Footer as SanityFooter, Header as SanityHeader } from "@/sanity/types";
 // Import the PostHogProvider
 import { PostHogProvider } from "@/components/PostHogProvider";
 // Import the GoogleAnalytics component

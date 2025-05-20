@@ -1,4 +1,4 @@
-import type { SanityPage } from "@/sanity/types/schema";
+import type { Page } from "@/sanity/types";
 import { client } from "@/sanity/client";
 import { notFound } from "next/navigation";
 import RenderSection from "@/components/sections/RenderSection";
@@ -44,7 +44,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getPage(slug: string): Promise<SanityPage | null> {
+async function getPage(slug: string): Promise<Page | null> {
   return client.fetch(pageQuery, { slug });
 }
 

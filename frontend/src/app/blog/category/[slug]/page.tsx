@@ -1,9 +1,11 @@
 import { client } from "@/sanity/client";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import type { SanityCategory } from "@/sanity/types/schema";
+import type { Category, Author,
+  PortableText,
+  SanityImageHotspot,
+  SanityImageCrop } from "@/sanity/types";
 import CategoryPageUI from "@/components/blog/CategoryPageUI";
-import type { BlogPostData } from "@/app/blog/[slug]/page";
 
 // Define PageProps with Promise for params
 interface PageProps {
@@ -30,7 +32,7 @@ export async function generateMetadata({
 }
 
 // Fetch the category by slug
-async function getCategory(slug: string): Promise<SanityCategory | null> {
+async function getCategory(slug: string): Promise<Category | null> {
   return client.fetch(
     `
     *[_type == "category" && slug.current == $slug][0]{
@@ -44,8 +46,30 @@ async function getCategory(slug: string): Promise<SanityCategory | null> {
   );
 }
 
+// Define the expanded blog post type for server-side
+type ExpandedBlogPost = {
+  _id: string;
+  _type: "blogPost";
+  title: string;
+  slug: { current: string };
+  publishedAt: string;
+  excerpt?: string;
+  mainImage?: {
+    asset?: { _ref: string; _type: string };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    caption?: string;
+    _type: string;
+  };
+  body?: PortableText;
+  featured?: string | boolean;
+  author: Author;
+  categories?: Category[];
+};
+
 // Fetch posts by category
-async function getCategoryPosts(categoryId: string): Promise<BlogPostData[]> {
+async function getCategoryPosts(categoryId: string): Promise<ExpandedBlogPost[]> {
   return client.fetch(
     `
     *[_type == "blogPost" && references($categoryId)] | order(publishedAt desc){

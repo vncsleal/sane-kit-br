@@ -6,11 +6,41 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { urlFor } from "@/sanity/client";
-import type { SanityCategory } from "@/sanity/types/schema";
-import type { BlogPostData } from "@/app/blog/[slug]/page";
+import type { 
+  Author,
+  Category,
+  PortableText,
+  SanityImageHotspot,
+  SanityImageCrop
+} from "@/sanity/types";
+
+// Define the post interface using official Sanity types
+interface BlogPostData {
+  _id: string;
+  _type: "blogPost";
+  title: string;
+  slug: {
+    current: string;
+  };
+  publishedAt: string;
+  excerpt?: string;
+  mainImage?: {
+    asset?: { _ref: string; _type: string };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    caption?: string;
+    _type: string;
+  };
+  body?: PortableText;
+  featured?: string | boolean;
+  authors?: Author[];
+  author: Author;
+  categories?: Category[];
+}
 
 interface CategoryPageUIProps {
-	category: SanityCategory;
+	category: Category;
 	posts: BlogPostData[];
 }
 
@@ -121,7 +151,7 @@ export default function CategoryPageUI({
 													{post.author?.avatar?.asset?._ref ? (
 														<AvatarImage
 															src={urlFor(post.author.avatar.asset._ref).url()}
-															alt={post.author.avatar?.alt || post.author.name}
+															alt={post.author.name}
 														/>
 													) : null}
 													<AvatarFallback>

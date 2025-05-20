@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { client } from "@/sanity/client";
 import type {
-  SanityBlogPage,
-  SanityCategory,
-  SanityImage,
-} from "@/sanity/types/schema";
+  BlogPage, 
+  Category
+} from "@/sanity/types";
 import BlogIndexPageUI from "@/components/blog/BlogIndexPageUI";
 import { groq } from "next-sanity";
 
-// Use SanityBlogPage type
-type BlogPageConfig = SanityBlogPage;
+// Use BlogPage type
+type BlogPageConfig = BlogPage;
 
 // Define the list item type without i18n fields
 export interface BlogPostListItem {
@@ -18,14 +17,26 @@ export interface BlogPostListItem {
   slug: { current: string };
   publishedAt?: string;
   excerpt?: string;
-  mainImage?: SanityImage;
-  featured?: string; // Changed from boolean to string to match schema
+  mainImage?: {
+    asset?: { _ref: string; _type: string };
+    hotspot?: { _type: string; x?: number; y?: number; height?: number; width?: number };
+    crop?: { _type: string; top?: number; bottom?: number; left?: number; right?: number };
+    alt?: string;
+    _type: string;
+  };
+  featured?: string;
   author?: {
     _id: string;
     name: string;
-    avatar?: SanityImage;
+    avatar?: {
+      asset?: { _ref: string; _type: string };
+      hotspot?: { _type: string; x?: number; y?: number; height?: number; width?: number };
+      crop?: { _type: string; top?: number; bottom?: number; left?: number; right?: number };
+      alt?: string;
+      _type: string;
+    };
   };
-  categories?: SanityCategory[];
+  categories?: Category[];
 }
 
 // Define pagination metadata
@@ -35,7 +46,6 @@ export interface PaginationData {
   totalPosts: number;
 }
 
-// Define PageProps to match other pages in the project
 interface PageProps {
   params: Promise<{slug: string}>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

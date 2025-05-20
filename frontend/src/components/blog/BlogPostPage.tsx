@@ -22,12 +22,14 @@ import {
 	Mail,
 } from "lucide-react";
 import type {
-	PortableTextContent,
-	SanityAuthor,
-	SanityCategory,
-	SanityImage,
-	PortableTextImage as SanityPortableTextImage,
-} from "@/sanity/types/schema";
+	Author,
+	Category,
+	CodeBlock as SanityCodeBlock,
+	Code as SanityCode,
+	PortableText as SanityPortableText,
+	SanityImageHotspot,
+	SanityImageCrop
+} from "@/sanity/types";
 import { BlogShareButton } from "./BlogShareButton";
 
 // Static text
@@ -49,32 +51,21 @@ interface ExpandedBlogPost {
 	};
 	publishedAt: string;
 	excerpt?: string;
-	mainImage?: SanityImage;
-	body?: PortableTextContent;
+	mainImage?: {
+		asset?: { _ref: string; _type: string };
+		hotspot?: SanityImageHotspot;
+		crop?: SanityImageCrop;
+		alt?: string;
+		_type: string;
+	};
+	body?: SanityPortableText;
 	featured?: string | boolean;
-	authors?: SanityAuthor[];
-	author: SanityAuthor;
-	categories?: SanityCategory[];
+	authors?: Author[];
+	author: Author;
+	categories?: Category[];
 }
 
-// Define interface for Sanity code block value
-interface CodeBlockValue {
-	_type: "codeBlock";
-	code:
-		| string
-		| {
-				_type: "code";
-				code: string;
-				language?: string;
-				filename?: string;
-		  };
-	language?: string;
-	filename?: string;
-	showLineNumbers?: boolean;
-	title?: string;
-	highlightLines?: string;
-	caption?: string;
-}
+// Using SanityCodeBlock from the official types
 
 interface BlogPostPageProps {
 	post: ExpandedBlogPost;
@@ -96,7 +87,11 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 		types: {
 			image: ({
 				value,
-			}: PortableTextComponentProps<SanityPortableTextImage>) => (
+			}: PortableTextComponentProps<{
+				asset: { _ref: string };
+				alt?: string;
+				caption?: string;
+			}>) => (
 				<figure className="my-8">
 					<div className="relative w-full rounded-md overflow-hidden">
 						<Image
@@ -115,37 +110,32 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 					)}
 				</figure>
 			),
-			codeBlock: ({ value }: PortableTextComponentProps<CodeBlockValue>) => {
+			codeBlock: ({ value }: PortableTextComponentProps<SanityCodeBlock>) => {
 				// Handle case where code is an object from Sanity code-input plugin
 				if (typeof value.code === "object" && value.code !== null) {
+					const codeObj = value.code as SanityCode;
 					return (
 						<CodeBlock
-							code={value.code.code || ""}
-							language={value.code.language || value.language || "typescript"}
-							filename={value.code.filename || value.filename || ""}
+							code={codeObj.code || ""}
+							language={codeObj.language || "typescript"}
+							filename={codeObj.filename || ""}
 							title={value.title || ""}
 							highlightLines={value.highlightLines}
-							showLineNumbers={
-								value.showLineNumbers !== undefined
-									? value.showLineNumbers
-									: true
-							}
+							showLineNumbers={value.showLineNumbers === "true"}
 							caption={value.caption || ""}
 						/>
 					);
 				}
 
-				// Handle string code (original format)
+				// Handle string code (legacy format)
 				return (
 					<CodeBlock
 						code={typeof value.code === "string" ? value.code : ""}
-						language={value.language || "typescript"}
-						filename={value.filename || ""}
+						language={"typescript"} // Default to typescript
+						filename={""}
 						title={value.title || ""}
 						highlightLines={value.highlightLines}
-						showLineNumbers={
-							value.showLineNumbers !== undefined ? value.showLineNumbers : true
-						}
+						showLineNumbers={value.showLineNumbers === "true"}
 						caption={value.caption || ""}
 					/>
 				);
@@ -242,7 +232,7 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 				<div className="flex gap-2 mb-4 flex-wrap">
 					{post.categories?.map((category) => (
 						<Link
-							href={`/blog/category/${category.slug.current}`}
+							href={`/blog/category/${category.slug?.current || ''}`}
 							key={category._id}
 						>
 							<Badge>{category.title}</Badge>
@@ -266,12 +256,14 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 								/>
 							) : null}
 							<AvatarFallback>
-								{post.author.name
-									.split(" ")
-									.map((n) => n[0])
-									.join("")
-									.toUpperCase()
-									.substring(0, 2)}
+								{post.author.name 
+									? post.author.name
+										.split(" ")
+										.map((n) => n[0])
+										.join("")
+										.toUpperCase()
+										.substring(0, 2)
+									: "AU"}
 							</AvatarFallback>
 						</Avatar>
 
@@ -358,12 +350,14 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 									/>
 								) : null}
 								<AvatarFallback>
-									{post.author.name
-										.split(" ")
-										.map((n) => n[0])
-										.join("")
-										.toUpperCase()
-										.substring(0, 2)}
+									{post.author.name 
+										? post.author.name
+											.split(" ")
+											.map((n) => n[0])
+											.join("")
+											.toUpperCase()
+											.substring(0, 2)
+										: "AU"}
 								</AvatarFallback>
 							</Avatar>
 
@@ -392,7 +386,7 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 														asChild
 													>
 														<Link
-															href={link.url}
+															href={link.url || '#'}
 															target="_blank"
 															rel="noopener noreferrer"
 														>

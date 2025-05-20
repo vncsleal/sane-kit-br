@@ -16,26 +16,18 @@ import {
 	Youtube,
 	Mail,
 } from "lucide-react";
-import type {
-	SanityAuthor,
-	SanityBlogPost,
-	SanityCategory,
-	SanityAuthorSocialLink,
-} from "@/sanity/types/schema";
+
+import type { Author, BlogPost, Category } from "@/sanity/types";
 import { portableTextComponents } from "./PortableTextComponents";
 
-// Define types for the component props
-interface AuthorDetails extends SanityAuthor {
-	fullBio?: SanityAuthor["fullBio"];
-}
 
-interface ExpandedBlogPost extends Omit<SanityBlogPost, "categories" | "author"> {
-	categories?: SanityCategory[];
-	author?: SanityAuthor;
+interface ExpandedBlogPost extends Omit<BlogPost, "categories" | "author"> {
+	categories?: Category[];
+	author?: Author;
 }
 
 interface AuthorPageUIProps {
-	author: AuthorDetails;
+	author: Author;
 	posts: ExpandedBlogPost[];
 }
 
@@ -82,7 +74,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 							{author.avatar?.asset?._ref ? (
 								<AvatarImage
 									src={urlFor(author.avatar.asset._ref).url()}
-									alt={author.avatar?.alt || author.name || ""}
+									alt={author.name || ""}
 									className="object-cover"
 								/>
 							) : (
@@ -105,7 +97,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 					{/* Social Links */}
 					{author.socialLinks && author.socialLinks.length > 0 && (
 						<div className="flex flex-wrap gap-2 mb-6">
-							{author.socialLinks.map((link: SanityAuthorSocialLink) => {
+							{author.socialLinks.map((link) => {
 								const platform = link.platform as keyof typeof SocialIcons;
 								const Icon = SocialIcons[platform];
 								return (
@@ -117,7 +109,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 										asChild
 									>
 										<Link
-											href={link.url}
+											href={link.url || '#'}
 											target="_blank"
 											rel="noopener noreferrer"
 										>
@@ -160,7 +152,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 					<div className="relative w-full max-w-4xl mx-auto aspect-[21/9] rounded-xl overflow-hidden">
 						<Image
 							src={urlFor(author.featuredImage.asset._ref).url()}
-							alt={author.featuredImage?.alt || author.name || ""}
+							alt={author.name || ""}
 							fill
 							className="object-cover"
 						/>

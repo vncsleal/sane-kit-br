@@ -1,4 +1,4 @@
-import type { SanityPage } from "@/sanity/types/schema";
+import type { Page } from "@/sanity/types";
 import { client } from "@/sanity/client";
 import { notFound } from "next/navigation";
 import RenderSection from "@/components/sections/RenderSection";
@@ -30,7 +30,7 @@ const homePageQuery = `*[_type == "page" && slug.current == "/"][0]{
   }
 }`;
 
-async function getHomePage(): Promise<SanityPage | null> {
+async function getHomePage(): Promise<Page | null> {
   // Fetch the homepage data
   return client.fetch(homePageQuery, {});
 }

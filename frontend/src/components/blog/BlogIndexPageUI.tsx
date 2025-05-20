@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { SanityBlogPage } from "@/sanity/types/schema";
+import { BlogPage } from "@/sanity/types";
 import Image from "next/image";
 import Link from "next/link";
 import { urlFor } from "@/sanity/client";
@@ -39,7 +39,7 @@ function getInitials(name: string) {
 }
 
 interface BlogIndexPageUIProps {
-  config: SanityBlogPage;
+  config: BlogPage;
   posts: BlogPostListItem[];
   pagination: PaginationData;
 }

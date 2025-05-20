@@ -1,16 +1,13 @@
 import { client } from "@/sanity/client";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import type {
-  SanityAuthor,
-  SanityBlogPost,
-  SanityCategory,
-} from "@/sanity/types/schema";
+import type { Author, BlogPost,Category } from "@/sanity/types";
+
 import AuthorPageUI from "@/components/blog/AuthorPageUI";
 
 // Define a type for blog post with expanded fields
-interface ExpandedBlogPost extends Omit<SanityBlogPost, "categories"> {
-  categories?: SanityCategory[];
+interface ExpandedBlogPost extends Omit<BlogPost, "categories"> {
+  categories?: Category[];
 }
 
 // Define PageProps with Promise for params
@@ -39,7 +36,7 @@ export async function generateMetadata({
 }
 
 // Fetch the author by slug
-async function getAuthor(slug: string): Promise<SanityAuthor | null> {
+async function getAuthor(slug: string): Promise<Author | null> {
   return client.fetch(
     `
     *[_type == "author" && slug.current == $slug][0]{

@@ -14,7 +14,7 @@ export function ThemeToggle() {
 			variant="outline"
 			size="icon"
 			onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-			className="fixed bottom-4 left-4 z-50 rounded" // Added fixed positioning
+			className="fixed bottom-4 left-4 z-50 rounded"
 			aria-label="Toggle theme"
 		>
 			<Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
