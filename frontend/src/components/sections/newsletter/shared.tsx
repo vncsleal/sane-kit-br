@@ -19,22 +19,33 @@ export const IconMap = {
 export const SectionHeader = ({ 
   badgeText, 
   heading, 
-  subheading, 
-  isCenter = true
-}: Pick<NewsletterSection, 'badgeText' | 'heading' | 'subheading'> & { isCenter?: boolean }) => (
-  <div className={`flex gap-4 flex-col ${isCenter ? "items-center text-center" : ""}`}>
-    {badgeText && <Badge variant="outline">{badgeText}</Badge>}
-    <div className={`flex gap-2 flex-col ${isCenter ? "items-center" : ""}`}>
-      <h4 className={`text-3xl md:text-5xl tracking-tighter ${isCenter ? "text-center" : "text-left"} max-w-xl font-regular`}>
+  subheading,
+  variant = "default"
+}: Pick<NewsletterSection, 'badgeText' | 'heading' | 'subheading'> & { variant?: string }) => (
+  <>
+    {/* Badge */}
+    {badgeText && (
+      <div>
+        <Badge
+          variant={variant === "highlight" ? "secondary" : "outline"}
+        >
+          {badgeText}
+        </Badge>
+      </div>
+    )}
+
+    {/* Content */}
+    <div className="flex flex-col gap-2">
+      <h3 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
         {heading}
-      </h4>
+      </h3>
       {subheading && (
-        <p className={`text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl ${isCenter ? "text-center" : "text-left"}`}>
+        <p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl">
           {subheading}
         </p>
       )}
     </div>
-  </div>
+  </>
 );
 
 // Subscription form component
@@ -82,8 +93,9 @@ export const SubscriptionForm = ({
   const Icon = buttonIcon && buttonIcon !== "none" ? IconMap[buttonIcon] : null;
 
   // Apply different styles based on variant
-  const isHighlightVariant = variant === "highlight" || variant === "full";
-  const containerClass = isHighlightVariant ? "rounded-md p-1 bg-primary/10 backdrop-blur-sm" : "";
+  const isHighlightVariant = variant === "highlight";
+  const isFullVariant = variant === "full";
+  const containerClass = (isHighlightVariant || isFullVariant) ? "rounded-md p-1 backdrop-blur-sm" : "";
   
   if (submitted) {
     return (
@@ -101,12 +113,13 @@ export const SubscriptionForm = ({
           placeholder={inputPlaceholder}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1"
+          className={`flex-1 ${isHighlightVariant ? "bg-primary-foreground border-secondary" : ""}`}
           required
         />
         <Button 
           type="submit" 
-          disabled={isSubmitting} 
+          disabled={isSubmitting}
+          variant={isHighlightVariant ? "secondary" : "default"}
           className={Icon ? "gap-2" : ""}
         >
           {buttonText}

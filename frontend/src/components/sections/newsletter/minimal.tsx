@@ -16,29 +16,28 @@ export default function Minimal({
   successMessage,
   privacyText,
 }: MinimalProps) {
+  // Minimal variant has no special container styles
+  const containerStyle = "";
+  
   return (
-    <div className="w-full py-10 lg:py-20">
+    <div className="w-full py-20 lg:py-40">
       <div className="container mx-auto">
-        <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-8">
-          <div className="md:max-w-lg">
-            <SectionHeader 
-              badgeText={badgeText} 
-              heading={heading} 
-              subheading={subheading} 
-              isCenter={false} 
-            />
-          </div>
+        <div className={`flex flex-col text-center gap-8 items-center ${containerStyle}`}>
+          <SectionHeader 
+            badgeText={badgeText} 
+            heading={heading} 
+            subheading={subheading} 
+            variant={variant}
+          />
           
-          <div className="w-full md:w-auto">
-            <SubscriptionForm
-              inputPlaceholder={inputPlaceholder}
-              buttonText={buttonText}
-              buttonIcon={buttonIcon}
-              successMessage={successMessage}
-              privacyText={privacyText}
-              variant={variant}
-            />
-          </div>
+          <SubscriptionForm
+            inputPlaceholder={inputPlaceholder}
+            buttonText={buttonText}
+            buttonIcon={buttonIcon}
+            successMessage={successMessage}
+            privacyText={privacyText}
+            variant={variant}
+          />
         </div>
       </div>
     </div>

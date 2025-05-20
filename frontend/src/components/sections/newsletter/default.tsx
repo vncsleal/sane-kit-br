@@ -16,15 +16,18 @@ export default function Default({
   successMessage,
   privacyText,
 }: DefaultProps) {
+  // Define container styles for the default variant
+  const containerStyle = "bg-muted rounded-md p-4 lg:p-14";
+  
   return (
     <div className="w-full py-20 lg:py-40">
       <div className="container mx-auto">
-        <div className="flex flex-col items-center text-center gap-8">
+        <div className={`flex flex-col text-center gap-8 items-center ${containerStyle}`}>
           <SectionHeader 
             badgeText={badgeText} 
             heading={heading} 
             subheading={subheading} 
-            isCenter={true} 
+            variant={variant}
           />
           
           <SubscriptionForm

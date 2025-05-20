@@ -66,7 +66,7 @@ export default async function RootLayout({
 						disableTransitionOnChange
 					>
 							{header && <Header {...header} />}
-							<div className="mt-20 px-4 md:px-2">{children}</div>
+							<div className="mt-20">{children}</div>
 							{footer && <Footer {...footer} />}
 							<div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
 								<ThemeToggle />

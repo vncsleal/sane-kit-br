@@ -16,27 +16,28 @@ export default function Highlight({
   successMessage,
   privacyText,
 }: HighlightProps) {
+  // Define container styles for the highlight variant
+  const containerStyle = "bg-primary text-primary-foreground rounded-md p-4 lg:p-14";
+
   return (
     <div className="w-full py-20 lg:py-40">
       <div className="container mx-auto">
-        <div className="rounded-lg bg-primary/5 px-6 py-12 md:px-12 md:py-20">
-          <div className="flex flex-col items-center text-center gap-8">
-            <SectionHeader 
-              badgeText={badgeText} 
-              heading={heading} 
-              subheading={subheading} 
-              isCenter={true} 
-            />
-            
-            <SubscriptionForm
-              inputPlaceholder={inputPlaceholder}
-              buttonText={buttonText}
-              buttonIcon={buttonIcon}
-              successMessage={successMessage}
-              privacyText={privacyText}
-              variant={variant}
-            />
-          </div>
+        <div className={`flex flex-col text-center gap-8 items-center ${containerStyle}`}>
+          <SectionHeader 
+            badgeText={badgeText} 
+            heading={heading} 
+            subheading={subheading} 
+            variant={variant}
+          />
+          
+          <SubscriptionForm
+            inputPlaceholder={inputPlaceholder}
+            buttonText={buttonText}
+            buttonIcon={buttonIcon}
+            successMessage={successMessage}
+            privacyText={privacyText}
+            variant={variant}
+          />
         </div>
       </div>
     </div>
