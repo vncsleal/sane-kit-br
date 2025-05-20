@@ -63,6 +63,15 @@ function getInitials(name?: string) {
 }
 
 export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
+	// Static text in Portuguese
+	const staticText = {
+		noArticlesFound: "Nenhum artigo encontrado.",
+		viewAllBlogPosts: "Ver todos os posts",
+		noImage: "Sem imagem",
+		articlesBy: "Posts de",
+		email: "Email",
+	};
+
 	return (
 		<main className="container mx-auto px-4 md:px-6 py-12">
 			<div className="flex flex-col gap-16">
@@ -128,7 +137,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 									<Link href={`mailto:${author.email}`}>
 										<span className="flex items-center">
 											<Mail className="h-4 w-4 mr-2" />
-												<span>Email</span>
+												<span>{staticText.email}</span>
 										</span>
 									</Link>
 								</Button>
@@ -162,11 +171,11 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 				{/* Author's Posts */}
 				<div className="flex flex-col gap-8 max-w-7xl mx-auto w-full">
 					<h2 className="text-3xl font-semibold tracking-tight">
-						Artigos de {author.name}
+						{staticText.articlesBy} {author.name}
 					</h2>
 
 						{!posts || posts.length === 0 ? (
-						<p className="text-muted-foreground">Nenhum artigo encontrado.</p>
+						<p className="text-muted-foreground">{staticText.noArticlesFound}</p>
 					) : (
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 							{posts.map((post) => (
@@ -186,7 +195,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 											/>
 										) : (
 											<div className="w-full h-full bg-muted flex items-center justify-center">
-												<span className="text-muted-foreground">Sem imagem</span>
+												<span className="text-muted-foreground">{staticText.noImage}</span>
 											</div>
 										)}
 									</div>
@@ -216,7 +225,7 @@ export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
 
 					<div className="flex justify-center pt-8">
 						<Button asChild>
-							<Link href="/blog">Ver todos os artigos</Link>
+							<Link href="/blog">{staticText.viewAllBlogPosts}</Link>
 						</Button>
 					</div>
 				</div>
