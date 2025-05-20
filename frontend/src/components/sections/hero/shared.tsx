@@ -82,7 +82,7 @@ export const ButtonsGroup = ({
   if (!buttons.length) return null;
 
   return (
-    <div className="flex flex-wrap gap-4 mt-8">
+    <>
       {buttons.map((button) => {
         const Icon = button.icon ? IconMap[button.icon] : null;
         return (
@@ -90,7 +90,8 @@ export const ButtonsGroup = ({
             key={button._key}
             variant={button.variant || "default"}
             asChild
-            className={Icon ? "gap-2" : ""}
+            size="lg"
+            className="gap-4"
           >
             <Link href={button.url || "#"}>
               {button.label}
@@ -99,6 +100,6 @@ export const ButtonsGroup = ({
           </Button>
         );
       })}
-    </div>
+    </>
   );
 };

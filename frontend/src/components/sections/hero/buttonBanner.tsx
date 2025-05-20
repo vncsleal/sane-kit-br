@@ -14,38 +14,47 @@ export default function ButtonBanner({
   media,
 }: HeroSection) {
   return (
-    <div className="w-full relative min-h-[75vh] flex items-center py-20">
+    <div className="w-full relative">
       {/* Background media */}
       {renderBackgroundMedia(media)}
 
       {/* Content */}
-      <div className="container mx-auto relative z-20 text-white">
-        <div className="max-w-3xl flex flex-col gap-6">
+      <div className="container mx-auto relative z-20 text-primary">
+        <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col">
           {/* Banner button */}
           {bannerButton?.label && (
             <div>
               <Button
                 variant="secondary"
-                className="hover:-translate-y-1 transition-transform"
+                size="sm"
+                className="gap-4"
                 asChild
               >
-                <Link href={bannerButton.url || "#"}>{bannerButton.label}</Link>
+                <Link href={bannerButton.url || "#"}>
+                  {bannerButton.label}
+                </Link>
               </Button>
             </div>
           )}
 
-          {/* Heading */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-            {heading}
-          </h1>
-
-          {/* Subheading */}
-          {subheading && (
-            <p className="text-xl text-white/80 max-w-2xl">{subheading}</p>
-          )}
+          {/* Heading and Subheading */}
+          <div className="flex gap-4 flex-col">
+            <h1 className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-regular">
+              {heading}
+            </h1>
+            
+            {/* Subheading */}
+            {subheading && (
+              <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
+                {subheading}
+              </p>
+            )}
+          </div>
 
           {/* Buttons */}
-          <ButtonsGroup buttons={buttons} />
+          <div className="flex flex-row gap-3">
+            <ButtonsGroup buttons={buttons} />
+          </div>
         </div>
       </div>
     </div>
