@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "./CodeBlock";
+import { blogDictionaries } from "@/lib/dictionaries";
 import {
 	PortableText,
 	type PortableTextReactComponents,
@@ -31,14 +32,6 @@ import type {
 	SanityImageCrop
 } from "@/sanity/types";
 import { BlogShareButton } from "./BlogShareButton";
-
-// Static text
-const staticText = {
-	aboutTheAuthor: "Sobre o autor",
-	minRead: "min de leitura",
-	noImage: "Sem imagem",
-	unknownType: "Tipo desconhecido",
-};
 
 // Define the structure that represents post data after it's been fetched
 // and references have been expanded - modified to match BlogPostData
@@ -82,6 +75,12 @@ const SocialIcons = {
 } as const;
 
 export default function BlogPostPage({ post }: BlogPostPageProps) {
+	// Import text from dictionary
+	const staticText = {
+		...blogDictionaries.general,
+		...blogDictionaries.post,
+	};
+
 	// PortableText components for rendering blog content with improved styling
 	const components: PortableTextReactComponents = {
 		types: {
@@ -405,7 +404,7 @@ export default function BlogPostPage({ post }: BlogPostPageProps) {
 												>
 													<Link href={`mailto:${post.author.email}`}>
 														<Mail className="h-4 w-4" />
-														<span className="sr-only">Email</span>
+														<span className="sr-only">{staticText.email}</span>
 													</Link>
 												</Button>
 											)}

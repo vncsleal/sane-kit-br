@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/sanity/client";
+import { blogDictionaries } from "@/lib/dictionaries";
 import type { Footer } from "@/sanity/types";
 
 // Reusable Logo or Site Title component
@@ -37,7 +38,7 @@ export const Copyright = ({
   siteTitle?: string 
 }) => (
   <p className="text-sm text-background/60">
-    © {new Date().getFullYear()} {siteTitle}. Todos os direitos reservados.
+    © {new Date().getFullYear()} {siteTitle}. {blogDictionaries.footer.copyright}
   </p>
 );
 

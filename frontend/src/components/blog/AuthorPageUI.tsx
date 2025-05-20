@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { urlFor } from "@/sanity/client";
 import { PortableText } from "@portabletext/react";
+import { blogDictionaries } from "@/lib/dictionaries";
 import {
 	Twitter,
 	Linkedin,
@@ -63,13 +64,10 @@ function getInitials(name?: string) {
 }
 
 export default function AuthorPageUI({ author, posts }: AuthorPageUIProps) {
-	// Static text in Portuguese
+	// Import text from dictionary
 	const staticText = {
-		noArticlesFound: "Nenhum artigo encontrado.",
-		viewAllBlogPosts: "Ver todos os posts",
-		noImage: "Sem imagem",
-		articlesBy: "Posts de",
-		email: "Email",
+		...blogDictionaries.general,
+		...blogDictionaries.author,
 	};
 
 	return (

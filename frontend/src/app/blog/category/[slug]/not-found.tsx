@@ -1,12 +1,15 @@
 import NotFound from "@/components/global/NotFound";
+import { blogDictionaries } from "@/lib/dictionaries";
 
 export default function CategoryNotFound() {
+  const { categoryTitle, categoryMessage, backToBlog } = blogDictionaries.notFound;
+  
   return (
     <NotFound
-      title="Categoria Não Encontrada"
-      message="Desculpe, a categoria que você está procurando não existe ou pode ter sido removida."
+      title={categoryTitle}
+      message={categoryMessage}
       linkHref="/blog"
-      linkText="Voltar para o Blog"
+      linkText={backToBlog}
     />
   );
 }

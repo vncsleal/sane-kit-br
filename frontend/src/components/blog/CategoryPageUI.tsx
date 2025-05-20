@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { urlFor } from "@/sanity/client";
+import { blogDictionaries } from "@/lib/dictionaries";
 import type { 
   Author,
   Category,
@@ -69,11 +70,10 @@ export default function CategoryPageUI({
 	category,
 	posts,
 }: CategoryPageUIProps) {
-	// Static text in English
+	// Import text from dictionary
 	const staticText = {
-		noArticlesFound: "Nenhum artigo encontrado nesta categoria",
-		viewAllBlogPosts: "Ver todos os posts",
-		noImage: "Sem imagem",
+		...blogDictionaries.general,
+		...blogDictionaries.category,
 	};
 
 	return (

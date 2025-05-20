@@ -1,13 +1,15 @@
 import NotFound from "@/components/global/NotFound";
+import { blogDictionaries } from "@/lib/dictionaries";
 
-// Simple not-found page that uses the global NotFound component
 export default function SlugNotFound() {
+	const { pageTitle, pageMessage, backToHome } = blogDictionaries.notFound;
+
 	return (
 		<NotFound
-			title="Página não encontrada"
-			message="Não conseguimos encontrar a página que você está procurando."
+			title={pageTitle}
+			message={pageMessage}
 			linkHref="/"
-			linkText="Voltar para a página inicial"
+			linkText={backToHome}
 		/>
 	);
 }

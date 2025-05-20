@@ -1,12 +1,15 @@
 import NotFound from "@/components/global/NotFound";
+import { blogDictionaries } from "@/lib/dictionaries";
 
 export default function AuthorNotFound() {
+  const { authorTitle, authorMessage, backToBlog } = blogDictionaries.notFound;
+  
   return (
     <NotFound
-      title="Autor Não Encontrado"
-      message="Desculpe, o autor que você está procurando não existe ou pode ter sido removido."
+      title={authorTitle}
+      message={authorMessage}
       linkHref="/blog"
-      linkText="Voltar para o Blog"
+      linkText={backToBlog}
     />
   );
 }

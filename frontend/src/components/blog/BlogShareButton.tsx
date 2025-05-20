@@ -16,6 +16,7 @@ import {
 	Link as LinkIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { blogDictionaries } from "@/lib/dictionaries";
 
 interface BlogShareButtonProps {
 	title: string;
@@ -24,10 +25,8 @@ interface BlogShareButtonProps {
 
 export function BlogShareButton({ title, className }: BlogShareButtonProps) {
 	const staticText = {
-		share: "Compartilhar",
-		copyLink: "Copiar link",
-		email: "E-mail",
-		linkCopied: "Link copiado para área de transferência",
+		...blogDictionaries.general,
+		...blogDictionaries.share,
 	};
 
 	const handleShare = async (platform: string) => {
